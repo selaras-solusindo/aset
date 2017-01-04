@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration date="2017/01/04" author="e.World Technology Ltd.">
-  <project id="{32C4CE20-1B57-4C82-8475-08C0302816A6}" file="D:\xampp\htdocs\aset\aset.pmp" name="aset" product="PHPMaker" version="13.0" datetime="2017/01/04 13:17:31" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;">
-    <table id="tb_lantai" name="tb_lantai" caption="tb lantai" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
-    <table id="tb_lokasi" name="tb_lokasi" caption="tb lokasi" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
-    <table id="tb_device" name="tb_device" caption="tb device" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
+  <project id="{32C4CE20-1B57-4C82-8475-08C0302816A6}" file="D:\xampp\htdocs\aset\aset.pmp" name="aset" product="PHPMaker" version="13.0" datetime="2017/01/04 14:06:05" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;">
+    <table id="tb_lantai" name="tb_lantai" caption="Lantai" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
+    <table id="tb_lokasi" name="tb_lokasi" caption="Lokasi" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
+    <table id="tb_device" name="tb_device" caption="Device" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
   </project>
 </configuration>
