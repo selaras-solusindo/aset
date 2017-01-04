@@ -46,7 +46,7 @@ function Database_Connecting(&$info) {
 	}
 }
 ]]></CustomScript>
-  <Menu MenuID="5" MenuText="Merk" MenuParentID="-1" MenuGroup="0" MenuSource="" MenuExtUrl="" MenuAnonymous="0" MenuSecurity="" MenuUrl="tb_merk" MenuCustomUrl="0" MenuLevel="0" MenuShow="1" MenuDisplayOrder="-1" />
+  <Menu MenuID="5" MenuText="Merk" MenuParentID="4" MenuGroup="0" MenuSource="" MenuExtUrl="" MenuAnonymous="0" MenuSecurity="" MenuUrl="tb_merk" MenuCustomUrl="0" MenuLevel="1" MenuShow="1" MenuDisplayOrder="400" />
   <Menu MenuID="4" MenuText="Master" MenuParentID="-1" MenuGroup="0" MenuSource="" MenuExtUrl="" MenuAnonymous="8" MenuSecurity="" MenuUrl="" MenuCustomUrl="1" MenuLevel="0" MenuShow="1" MenuDisplayOrder="100" />
   <Menu MenuID="1" MenuText="Lantai" MenuParentID="4" MenuGroup="0" MenuSource="" MenuExtUrl="" MenuAnonymous="0" MenuSecurity="" MenuUrl="tb_lantai" MenuCustomUrl="0" MenuLevel="1" MenuShow="1" MenuDisplayOrder="100" />
   <Menu MenuID="2" MenuText="Lokasi" MenuParentID="4" MenuGroup="0" MenuSource="" MenuExtUrl="" MenuAnonymous="0" MenuSecurity="" MenuUrl="tb_lokasi" MenuCustomUrl="0" MenuLevel="1" MenuShow="1" MenuDisplayOrder="200" />

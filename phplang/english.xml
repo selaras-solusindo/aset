@@ -583,9 +583,6 @@
   <project>
     <phrase id="bodytitle" value="Manajemen Aset" />
     <phrase id="footertext" value="&amp;copy;2016 e.World Technology Ltd. All rights reserved." />
-    <menu id="5">
-      <phrase id="menutext" value="Merk" />
-    </menu>
     <menu id="4">
       <phrase id="menutext" value="Master" />
     </menu>
@@ -597,6 +594,9 @@
     </menu>
     <menu id="3">
       <phrase id="menutext" value="Device" />
+    </menu>
+    <menu id="5">
+      <phrase id="menutext" value="Merk" />
     </menu>
     <table id="tb_lantai">
       <phrase id="tblcaption" value="Lantai" />
