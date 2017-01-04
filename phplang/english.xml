@@ -589,6 +589,9 @@
     <menu id="2">
       <phrase id="menutext" value="tb lokasi" />
     </menu>
+    <menu id="3">
+      <phrase id="menutext" value="tb device" />
+    </menu>
     <table id="tb_lantai">
       <phrase id="tblcaption" value="tb lantai" />
       <field id="lantai_id">
@@ -608,6 +611,15 @@
       </field>
       <field id="lokasi_nama">
         <phrase id="fldcaption" value="lokasi nama" />
+      </field>
+    </table>
+    <table id="tb_device">
+      <phrase id="tblcaption" value="tb device" />
+      <field id="device_id">
+        <phrase id="fldcaption" value="device id" />
+      </field>
+      <field id="device_name">
+        <phrase id="fldcaption" value="device name" />
       </field>
     </table>
   </project>
