@@ -583,6 +583,9 @@
   <project>
     <phrase id="bodytitle" value="Manajemen Aset" />
     <phrase id="footertext" value="&amp;copy;2016 e.World Technology Ltd. All rights reserved." />
+    <menu id="6">
+      <phrase id="menutext" value="Home" />
+    </menu>
     <menu id="4">
       <phrase id="menutext" value="Master" />
     </menu>
@@ -636,6 +639,9 @@
       <field id="merk_nama">
         <phrase id="fldcaption" value="Merk" />
       </field>
+    </table>
+    <table id="home_php">
+      <phrase id="tblcaption" value="Home" />
     </table>
   </project>
 </ew-language>
