@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg13.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql13.php") ?>
 <?php include_once "phpfn13.php" ?>
-<?php include_once "tb_lantaiinfo.php" ?>
+<?php include_once "tb_lokasiinfo.php" ?>
 <?php include_once "userfn13.php" ?>
 <?php
 
@@ -13,9 +13,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$tb_lantai_list = NULL; // Initialize page object first
+$tb_lokasi_list = NULL; // Initialize page object first
 
-class ctb_lantai_list extends ctb_lantai {
+class ctb_lokasi_list extends ctb_lokasi {
 
 	// Page ID
 	var $PageID = 'list';
@@ -24,13 +24,13 @@ class ctb_lantai_list extends ctb_lantai {
 	var $ProjectID = "{32C4CE20-1B57-4C82-8475-08C0302816A6}";
 
 	// Table name
-	var $TableName = 'tb_lantai';
+	var $TableName = 'tb_lokasi';
 
 	// Page object name
-	var $PageObjName = 'tb_lantai_list';
+	var $PageObjName = 'tb_lokasi_list';
 
 	// Grid form hidden field names
-	var $FormName = 'ftb_lantailist';
+	var $FormName = 'ftb_lokasilist';
 	var $FormActionName = 'k_action';
 	var $FormKeyName = 'k_key';
 	var $FormOldKeyName = 'k_oldkey';
@@ -264,10 +264,10 @@ class ctb_lantai_list extends ctb_lantai {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (tb_lantai)
-		if (!isset($GLOBALS["tb_lantai"]) || get_class($GLOBALS["tb_lantai"]) == "ctb_lantai") {
-			$GLOBALS["tb_lantai"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["tb_lantai"];
+		// Table object (tb_lokasi)
+		if (!isset($GLOBALS["tb_lokasi"]) || get_class($GLOBALS["tb_lokasi"]) == "ctb_lokasi") {
+			$GLOBALS["tb_lokasi"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["tb_lokasi"];
 		}
 
 		// Initialize URLs
@@ -278,12 +278,12 @@ class ctb_lantai_list extends ctb_lantai {
 		$this->ExportXmlUrl = $this->PageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->PageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->PageUrl() . "export=pdf";
-		$this->AddUrl = "tb_lantaiadd.php";
+		$this->AddUrl = "tb_lokasiadd.php";
 		$this->InlineAddUrl = $this->PageUrl() . "a=add";
 		$this->GridAddUrl = $this->PageUrl() . "a=gridadd";
 		$this->GridEditUrl = $this->PageUrl() . "a=gridedit";
-		$this->MultiDeleteUrl = "tb_lantaidelete.php";
-		$this->MultiUpdateUrl = "tb_lantaiupdate.php";
+		$this->MultiDeleteUrl = "tb_lokasidelete.php";
+		$this->MultiUpdateUrl = "tb_lokasiupdate.php";
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
@@ -291,7 +291,7 @@ class ctb_lantai_list extends ctb_lantai {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'tb_lantai', TRUE);
+			define("EW_TABLE_NAME", 'tb_lokasi', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"])) $GLOBALS["gTimer"] = new cTimer();
@@ -322,7 +322,7 @@ class ctb_lantai_list extends ctb_lantai {
 		// Filter options
 		$this->FilterOptions = new cListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ewFilterOption ftb_lantailistsrch";
+		$this->FilterOptions->TagClassName = "ewFilterOption ftb_lokasilistsrch";
 
 		// List actions
 		$this->ListActions = new cListActions();
@@ -392,9 +392,10 @@ class ctb_lantai_list extends ctb_lantai {
 
 		// Setup export options
 		$this->SetupExportOptions();
+		$this->lokasi_id->SetVisibility();
+		$this->lokasi_id->Visible = !$this->IsAdd() && !$this->IsCopy() && !$this->IsGridAdd();
 		$this->lantai_id->SetVisibility();
-		$this->lantai_id->Visible = !$this->IsAdd() && !$this->IsCopy() && !$this->IsGridAdd();
-		$this->lantai_nama->SetVisibility();
+		$this->lokasi_nama->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -455,13 +456,13 @@ class ctb_lantai_list extends ctb_lantai {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $tb_lantai;
+		global $EW_EXPORT, $tb_lokasi;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($tb_lantai);
+				$doc = new $class($tb_lokasi);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -698,8 +699,8 @@ class ctb_lantai_list extends ctb_lantai {
 	function SetupKeyValues($key) {
 		$arrKeyFlds = explode($GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"], $key);
 		if (count($arrKeyFlds) >= 1) {
-			$this->lantai_id->setFormValue($arrKeyFlds[0]);
-			if (!is_numeric($this->lantai_id->FormValue))
+			$this->lokasi_id->setFormValue($arrKeyFlds[0]);
+			if (!is_numeric($this->lokasi_id->FormValue))
 				return FALSE;
 		}
 		return TRUE;
@@ -711,15 +712,16 @@ class ctb_lantai_list extends ctb_lantai {
 
 		// Load server side filters
 		if (EW_SEARCH_FILTER_OPTION == "Server") {
-			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "ftb_lantailistsrch");
+			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "ftb_lokasilistsrch");
 		} else {
 			$sSavedFilterList = "";
 		}
 
 		// Initialize
 		$sFilterList = "";
+		$sFilterList = ew_Concat($sFilterList, $this->lokasi_id->AdvancedSearch->ToJSON(), ","); // Field lokasi_id
 		$sFilterList = ew_Concat($sFilterList, $this->lantai_id->AdvancedSearch->ToJSON(), ","); // Field lantai_id
-		$sFilterList = ew_Concat($sFilterList, $this->lantai_nama->AdvancedSearch->ToJSON(), ","); // Field lantai_nama
+		$sFilterList = ew_Concat($sFilterList, $this->lokasi_nama->AdvancedSearch->ToJSON(), ","); // Field lokasi_nama
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -742,7 +744,7 @@ class ctb_lantai_list extends ctb_lantai {
 		global $UserProfile;
 		if (@$_POST["ajax"] == "savefilters") { // Save filter request (Ajax)
 			$filters = ew_StripSlashes(@$_POST["filters"]);
-			$UserProfile->SetSearchFilters(CurrentUserName(), "ftb_lantailistsrch", $filters);
+			$UserProfile->SetSearchFilters(CurrentUserName(), "ftb_lokasilistsrch", $filters);
 
 			// Clean output buffer
 			if (!EW_DEBUG_ENABLED && ob_get_length())
@@ -764,6 +766,14 @@ class ctb_lantai_list extends ctb_lantai {
 		$filter = json_decode(ew_StripSlashes(@$_POST["filter"]), TRUE);
 		$this->Command = "search";
 
+		// Field lokasi_id
+		$this->lokasi_id->AdvancedSearch->SearchValue = @$filter["x_lokasi_id"];
+		$this->lokasi_id->AdvancedSearch->SearchOperator = @$filter["z_lokasi_id"];
+		$this->lokasi_id->AdvancedSearch->SearchCondition = @$filter["v_lokasi_id"];
+		$this->lokasi_id->AdvancedSearch->SearchValue2 = @$filter["y_lokasi_id"];
+		$this->lokasi_id->AdvancedSearch->SearchOperator2 = @$filter["w_lokasi_id"];
+		$this->lokasi_id->AdvancedSearch->Save();
+
 		// Field lantai_id
 		$this->lantai_id->AdvancedSearch->SearchValue = @$filter["x_lantai_id"];
 		$this->lantai_id->AdvancedSearch->SearchOperator = @$filter["z_lantai_id"];
@@ -772,13 +782,13 @@ class ctb_lantai_list extends ctb_lantai {
 		$this->lantai_id->AdvancedSearch->SearchOperator2 = @$filter["w_lantai_id"];
 		$this->lantai_id->AdvancedSearch->Save();
 
-		// Field lantai_nama
-		$this->lantai_nama->AdvancedSearch->SearchValue = @$filter["x_lantai_nama"];
-		$this->lantai_nama->AdvancedSearch->SearchOperator = @$filter["z_lantai_nama"];
-		$this->lantai_nama->AdvancedSearch->SearchCondition = @$filter["v_lantai_nama"];
-		$this->lantai_nama->AdvancedSearch->SearchValue2 = @$filter["y_lantai_nama"];
-		$this->lantai_nama->AdvancedSearch->SearchOperator2 = @$filter["w_lantai_nama"];
-		$this->lantai_nama->AdvancedSearch->Save();
+		// Field lokasi_nama
+		$this->lokasi_nama->AdvancedSearch->SearchValue = @$filter["x_lokasi_nama"];
+		$this->lokasi_nama->AdvancedSearch->SearchOperator = @$filter["z_lokasi_nama"];
+		$this->lokasi_nama->AdvancedSearch->SearchCondition = @$filter["v_lokasi_nama"];
+		$this->lokasi_nama->AdvancedSearch->SearchValue2 = @$filter["y_lokasi_nama"];
+		$this->lokasi_nama->AdvancedSearch->SearchOperator2 = @$filter["w_lokasi_nama"];
+		$this->lokasi_nama->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -786,7 +796,7 @@ class ctb_lantai_list extends ctb_lantai {
 	// Return basic search SQL
 	function BasicSearchSQL($arKeywords, $type) {
 		$sWhere = "";
-		$this->BuildBasicSearchSQL($sWhere, $this->lantai_nama, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->lokasi_nama, $arKeywords, $type);
 		return $sWhere;
 	}
 
@@ -950,8 +960,9 @@ class ctb_lantai_list extends ctb_lantai {
 		if (@$_GET["order"] <> "") {
 			$this->CurrentOrder = ew_StripSlashes(@$_GET["order"]);
 			$this->CurrentOrderType = @$_GET["ordertype"];
+			$this->UpdateSort($this->lokasi_id); // lokasi_id
 			$this->UpdateSort($this->lantai_id); // lantai_id
-			$this->UpdateSort($this->lantai_nama); // lantai_nama
+			$this->UpdateSort($this->lokasi_nama); // lokasi_nama
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -984,8 +995,10 @@ class ctb_lantai_list extends ctb_lantai {
 			if ($this->Command == "resetsort") {
 				$sOrderBy = "";
 				$this->setSessionOrderBy($sOrderBy);
+				$this->setSessionOrderByList($sOrderBy);
+				$this->lokasi_id->setSort("");
 				$this->lantai_id->setSort("");
-				$this->lantai_nama->setSort("");
+				$this->lokasi_nama->setSort("");
 			}
 
 			// Reset start position
@@ -1130,7 +1143,7 @@ class ctb_lantai_list extends ctb_lantai {
 
 		// "checkbox"
 		$oListOpt = &$this->ListOptions->Items["checkbox"];
-		$oListOpt->Body = "<input type=\"checkbox\" name=\"key_m[]\" value=\"" . ew_HtmlEncode($this->lantai_id->CurrentValue) . "\" onclick='ew_ClickMultiCheckbox(event);'>";
+		$oListOpt->Body = "<input type=\"checkbox\" name=\"key_m[]\" value=\"" . ew_HtmlEncode($this->lokasi_id->CurrentValue) . "\" onclick='ew_ClickMultiCheckbox(event);'>";
 		$this->RenderListOptionsExt();
 
 		// Call ListOptions_Rendered event
@@ -1166,10 +1179,10 @@ class ctb_lantai_list extends ctb_lantai {
 
 		// Filter button
 		$item = &$this->FilterOptions->Add("savecurrentfilter");
-		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"ftb_lantailistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"ftb_lokasilistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->Add("deletefilter");
-		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"ftb_lantailistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"ftb_lokasilistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1193,7 +1206,7 @@ class ctb_lantai_list extends ctb_lantai {
 					$item = &$option->Add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<span class=\"" . ew_HtmlEncode($listaction->Icon) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\"></span> " : $caption;
-					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.ftb_lantailist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.ftb_lokasilist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1297,7 +1310,7 @@ class ctb_lantai_list extends ctb_lantai {
 		// Search button
 		$item = &$this->SearchOptions->Add("searchtoggle");
 		$SearchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"ftb_lantailistsrch\">" . $Language->Phrase("SearchBtn") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"ftb_lokasilistsrch\">" . $Language->Phrase("SearchBtn") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
@@ -1384,7 +1397,7 @@ class ctb_lantai_list extends ctb_lantai {
 		if ($this->UseSelectLimit) {
 			$conn->raiseErrorFn = $GLOBALS["EW_ERROR_FN"];
 			if ($dbtype == "MSSQL") {
-				$rs = $conn->SelectLimit($sSql, $rowcnt, $offset, array("_hasOrderBy" => trim($this->getOrderBy()) || trim($this->getSessionOrderBy())));
+				$rs = $conn->SelectLimit($sSql, $rowcnt, $offset, array("_hasOrderBy" => trim($this->getOrderBy()) || trim($this->getSessionOrderByList())));
 			} else {
 				$rs = $conn->SelectLimit($sSql, $rowcnt, $offset);
 			}
@@ -1427,16 +1440,23 @@ class ctb_lantai_list extends ctb_lantai {
 		// Call Row Selected event
 		$row = &$rs->fields;
 		$this->Row_Selected($row);
+		$this->lokasi_id->setDbValue($rs->fields('lokasi_id'));
 		$this->lantai_id->setDbValue($rs->fields('lantai_id'));
-		$this->lantai_nama->setDbValue($rs->fields('lantai_nama'));
+		if (array_key_exists('EV__lantai_id', $rs->fields)) {
+			$this->lantai_id->VirtualValue = $rs->fields('EV__lantai_id'); // Set up virtual field value
+		} else {
+			$this->lantai_id->VirtualValue = ""; // Clear value
+		}
+		$this->lokasi_nama->setDbValue($rs->fields('lokasi_nama'));
 	}
 
 	// Load DbValue from recordset
 	function LoadDbValues(&$rs) {
 		if (!$rs || !is_array($rs) && $rs->EOF) return;
 		$row = is_array($rs) ? $rs : $rs->fields;
+		$this->lokasi_id->DbValue = $row['lokasi_id'];
 		$this->lantai_id->DbValue = $row['lantai_id'];
-		$this->lantai_nama->DbValue = $row['lantai_nama'];
+		$this->lokasi_nama->DbValue = $row['lokasi_nama'];
 	}
 
 	// Load old record
@@ -1444,8 +1464,8 @@ class ctb_lantai_list extends ctb_lantai {
 
 		// Load key values from Session
 		$bValidKey = TRUE;
-		if (strval($this->getKey("lantai_id")) <> "")
-			$this->lantai_id->CurrentValue = $this->getKey("lantai_id"); // lantai_id
+		if (strval($this->getKey("lokasi_id")) <> "")
+			$this->lokasi_id->CurrentValue = $this->getKey("lokasi_id"); // lokasi_id
 		else
 			$bValidKey = FALSE;
 
@@ -1478,28 +1498,62 @@ class ctb_lantai_list extends ctb_lantai {
 		$this->Row_Rendering();
 
 		// Common render codes for all row types
+		// lokasi_id
 		// lantai_id
-		// lantai_nama
+		// lokasi_nama
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
+		// lokasi_id
+		$this->lokasi_id->ViewValue = $this->lokasi_id->CurrentValue;
+		$this->lokasi_id->ViewCustomAttributes = "";
+
 		// lantai_id
-		$this->lantai_id->ViewValue = $this->lantai_id->CurrentValue;
+		if ($this->lantai_id->VirtualValue <> "") {
+			$this->lantai_id->ViewValue = $this->lantai_id->VirtualValue;
+		} else {
+			$this->lantai_id->ViewValue = $this->lantai_id->CurrentValue;
+		if (strval($this->lantai_id->CurrentValue) <> "") {
+			$sFilterWrk = "`lantai_id`" . ew_SearchString("=", $this->lantai_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `lantai_id`, `lantai_nama` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `tb_lantai`";
+		$sWhereWrk = "";
+		$this->lantai_id->LookupFilters = array("dx1" => '`lantai_nama`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->lantai_id, $sWhereWrk); // Call Lookup selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->lantai_id->ViewValue = $this->lantai_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->lantai_id->ViewValue = $this->lantai_id->CurrentValue;
+			}
+		} else {
+			$this->lantai_id->ViewValue = NULL;
+		}
+		}
 		$this->lantai_id->ViewCustomAttributes = "";
 
-		// lantai_nama
-		$this->lantai_nama->ViewValue = $this->lantai_nama->CurrentValue;
-		$this->lantai_nama->ViewCustomAttributes = "";
+		// lokasi_nama
+		$this->lokasi_nama->ViewValue = $this->lokasi_nama->CurrentValue;
+		$this->lokasi_nama->ViewCustomAttributes = "";
+
+			// lokasi_id
+			$this->lokasi_id->LinkCustomAttributes = "";
+			$this->lokasi_id->HrefValue = "";
+			$this->lokasi_id->TooltipValue = "";
 
 			// lantai_id
 			$this->lantai_id->LinkCustomAttributes = "";
 			$this->lantai_id->HrefValue = "";
 			$this->lantai_id->TooltipValue = "";
 
-			// lantai_nama
-			$this->lantai_nama->LinkCustomAttributes = "";
-			$this->lantai_nama->HrefValue = "";
-			$this->lantai_nama->TooltipValue = "";
+			// lokasi_nama
+			$this->lokasi_nama->LinkCustomAttributes = "";
+			$this->lokasi_nama->HrefValue = "";
+			$this->lokasi_nama->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1549,7 +1603,7 @@ class ctb_lantai_list extends ctb_lantai {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_tb_lantai\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_tb_lantai',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.ftb_lantailist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_tb_lokasi\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_tb_lokasi',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.ftb_lokasilist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = TRUE;
 
 		// Drop down button for export
@@ -1930,31 +1984,31 @@ class ctb_lantai_list extends ctb_lantai {
 <?php
 
 // Create page object
-if (!isset($tb_lantai_list)) $tb_lantai_list = new ctb_lantai_list();
+if (!isset($tb_lokasi_list)) $tb_lokasi_list = new ctb_lokasi_list();
 
 // Page init
-$tb_lantai_list->Page_Init();
+$tb_lokasi_list->Page_Init();
 
 // Page main
-$tb_lantai_list->Page_Main();
+$tb_lokasi_list->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$tb_lantai_list->Page_Render();
+$tb_lokasi_list->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($tb_lantai->Export == "") { ?>
+<?php if ($tb_lokasi->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "list";
-var CurrentForm = ftb_lantailist = new ew_Form("ftb_lantailist", "list");
-ftb_lantailist.FormKeyCountName = '<?php echo $tb_lantai_list->FormKeyCountName ?>';
+var CurrentForm = ftb_lokasilist = new ew_Form("ftb_lokasilist", "list");
+ftb_lokasilist.FormKeyCountName = '<?php echo $tb_lokasi_list->FormKeyCountName ?>';
 
 // Form_CustomValidate event
-ftb_lantailist.Form_CustomValidate = 
+ftb_lokasilist.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid. 
@@ -1963,86 +2017,87 @@ ftb_lantailist.Form_CustomValidate =
 
 // Use JavaScript validation or not
 <?php if (EW_CLIENT_VALIDATE) { ?>
-ftb_lantailist.ValidateRequired = true;
+ftb_lokasilist.ValidateRequired = true;
 <?php } else { ?>
-ftb_lantailist.ValidateRequired = false; 
+ftb_lokasilist.ValidateRequired = false; 
 <?php } ?>
 
 // Dynamic selection lists
-// Form object for search
+ftb_lokasilist.Lists["x_lantai_id"] = {"LinkField":"x_lantai_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_lantai_nama","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"tb_lantai"};
 
-var CurrentSearchForm = ftb_lantailistsrch = new ew_Form("ftb_lantailistsrch");
+// Form object for search
+var CurrentSearchForm = ftb_lokasilistsrch = new ew_Form("ftb_lokasilistsrch");
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($tb_lantai->Export == "") { ?>
+<?php if ($tb_lokasi->Export == "") { ?>
 <div class="ewToolbar">
-<?php if ($tb_lantai->Export == "") { ?>
+<?php if ($tb_lokasi->Export == "") { ?>
 <?php $Breadcrumb->Render(); ?>
 <?php } ?>
-<?php if ($tb_lantai_list->TotalRecs > 0 && $tb_lantai_list->ExportOptions->Visible()) { ?>
-<?php $tb_lantai_list->ExportOptions->Render("body") ?>
+<?php if ($tb_lokasi_list->TotalRecs > 0 && $tb_lokasi_list->ExportOptions->Visible()) { ?>
+<?php $tb_lokasi_list->ExportOptions->Render("body") ?>
 <?php } ?>
-<?php if ($tb_lantai_list->SearchOptions->Visible()) { ?>
-<?php $tb_lantai_list->SearchOptions->Render("body") ?>
+<?php if ($tb_lokasi_list->SearchOptions->Visible()) { ?>
+<?php $tb_lokasi_list->SearchOptions->Render("body") ?>
 <?php } ?>
-<?php if ($tb_lantai_list->FilterOptions->Visible()) { ?>
-<?php $tb_lantai_list->FilterOptions->Render("body") ?>
+<?php if ($tb_lokasi_list->FilterOptions->Visible()) { ?>
+<?php $tb_lokasi_list->FilterOptions->Render("body") ?>
 <?php } ?>
-<?php if ($tb_lantai->Export == "") { ?>
+<?php if ($tb_lokasi->Export == "") { ?>
 <?php echo $Language->SelectionForm(); ?>
 <?php } ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
 <?php
-	$bSelectLimit = $tb_lantai_list->UseSelectLimit;
+	$bSelectLimit = $tb_lokasi_list->UseSelectLimit;
 	if ($bSelectLimit) {
-		if ($tb_lantai_list->TotalRecs <= 0)
-			$tb_lantai_list->TotalRecs = $tb_lantai->SelectRecordCount();
+		if ($tb_lokasi_list->TotalRecs <= 0)
+			$tb_lokasi_list->TotalRecs = $tb_lokasi->SelectRecordCount();
 	} else {
-		if (!$tb_lantai_list->Recordset && ($tb_lantai_list->Recordset = $tb_lantai_list->LoadRecordset()))
-			$tb_lantai_list->TotalRecs = $tb_lantai_list->Recordset->RecordCount();
+		if (!$tb_lokasi_list->Recordset && ($tb_lokasi_list->Recordset = $tb_lokasi_list->LoadRecordset()))
+			$tb_lokasi_list->TotalRecs = $tb_lokasi_list->Recordset->RecordCount();
 	}
-	$tb_lantai_list->StartRec = 1;
-	if ($tb_lantai_list->DisplayRecs <= 0 || ($tb_lantai->Export <> "" && $tb_lantai->ExportAll)) // Display all records
-		$tb_lantai_list->DisplayRecs = $tb_lantai_list->TotalRecs;
-	if (!($tb_lantai->Export <> "" && $tb_lantai->ExportAll))
-		$tb_lantai_list->SetUpStartRec(); // Set up start record position
+	$tb_lokasi_list->StartRec = 1;
+	if ($tb_lokasi_list->DisplayRecs <= 0 || ($tb_lokasi->Export <> "" && $tb_lokasi->ExportAll)) // Display all records
+		$tb_lokasi_list->DisplayRecs = $tb_lokasi_list->TotalRecs;
+	if (!($tb_lokasi->Export <> "" && $tb_lokasi->ExportAll))
+		$tb_lokasi_list->SetUpStartRec(); // Set up start record position
 	if ($bSelectLimit)
-		$tb_lantai_list->Recordset = $tb_lantai_list->LoadRecordset($tb_lantai_list->StartRec-1, $tb_lantai_list->DisplayRecs);
+		$tb_lokasi_list->Recordset = $tb_lokasi_list->LoadRecordset($tb_lokasi_list->StartRec-1, $tb_lokasi_list->DisplayRecs);
 
 	// Set no record found message
-	if ($tb_lantai->CurrentAction == "" && $tb_lantai_list->TotalRecs == 0) {
-		if ($tb_lantai_list->SearchWhere == "0=101")
-			$tb_lantai_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
+	if ($tb_lokasi->CurrentAction == "" && $tb_lokasi_list->TotalRecs == 0) {
+		if ($tb_lokasi_list->SearchWhere == "0=101")
+			$tb_lokasi_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
-			$tb_lantai_list->setWarningMessage($Language->Phrase("NoRecord"));
+			$tb_lokasi_list->setWarningMessage($Language->Phrase("NoRecord"));
 	}
-$tb_lantai_list->RenderOtherOptions();
+$tb_lokasi_list->RenderOtherOptions();
 ?>
 <?php if ($Security->IsLoggedIn()) { ?>
-<?php if ($tb_lantai->Export == "" && $tb_lantai->CurrentAction == "") { ?>
-<form name="ftb_lantailistsrch" id="ftb_lantailistsrch" class="form-inline ewForm" action="<?php echo ew_CurrentPage() ?>">
-<?php $SearchPanelClass = ($tb_lantai_list->SearchWhere <> "") ? " in" : " in"; ?>
-<div id="ftb_lantailistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
+<?php if ($tb_lokasi->Export == "" && $tb_lokasi->CurrentAction == "") { ?>
+<form name="ftb_lokasilistsrch" id="ftb_lokasilistsrch" class="form-inline ewForm" action="<?php echo ew_CurrentPage() ?>">
+<?php $SearchPanelClass = ($tb_lokasi_list->SearchWhere <> "") ? " in" : " in"; ?>
+<div id="ftb_lokasilistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
 <input type="hidden" name="cmd" value="search">
-<input type="hidden" name="t" value="tb_lantai">
+<input type="hidden" name="t" value="tb_lokasi">
 	<div class="ewBasicSearch">
 <div id="xsr_1" class="ewRow">
 	<div class="ewQuickSearch input-group">
-	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($tb_lantai_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
-	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($tb_lantai_list->BasicSearch->getType()) ?>">
+	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($tb_lokasi_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
+	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($tb_lokasi_list->BasicSearch->getType()) ?>">
 	<div class="input-group-btn">
-		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $tb_lantai_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
+		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $tb_lokasi_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
 		<ul class="dropdown-menu pull-right" role="menu">
-			<li<?php if ($tb_lantai_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
-			<li<?php if ($tb_lantai_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
-			<li<?php if ($tb_lantai_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
-			<li<?php if ($tb_lantai_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
+			<li<?php if ($tb_lokasi_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
+			<li<?php if ($tb_lokasi_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
+			<li<?php if ($tb_lokasi_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
+			<li<?php if ($tb_lokasi_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
 		</ul>
 	<button class="btn btn-primary ewButton" name="btnsubmit" id="btnsubmit" type="submit"><?php echo $Language->Phrase("QuickSearchBtn") ?></button>
 	</div>
@@ -2053,149 +2108,166 @@ $tb_lantai_list->RenderOtherOptions();
 </form>
 <?php } ?>
 <?php } ?>
-<?php $tb_lantai_list->ShowPageHeader(); ?>
+<?php $tb_lokasi_list->ShowPageHeader(); ?>
 <?php
-$tb_lantai_list->ShowMessage();
+$tb_lokasi_list->ShowMessage();
 ?>
-<?php if ($tb_lantai_list->TotalRecs > 0 || $tb_lantai->CurrentAction <> "") { ?>
-<div class="panel panel-default ewGrid tb_lantai">
-<form name="ftb_lantailist" id="ftb_lantailist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($tb_lantai_list->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $tb_lantai_list->Token ?>">
+<?php if ($tb_lokasi_list->TotalRecs > 0 || $tb_lokasi->CurrentAction <> "") { ?>
+<div class="panel panel-default ewGrid tb_lokasi">
+<form name="ftb_lokasilist" id="ftb_lokasilist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($tb_lokasi_list->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $tb_lokasi_list->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="tb_lantai">
-<div id="gmp_tb_lantai" class="<?php if (ew_IsResponsiveLayout()) { echo "table-responsive "; } ?>ewGridMiddlePanel">
-<?php if ($tb_lantai_list->TotalRecs > 0) { ?>
-<table id="tbl_tb_lantailist" class="table ewTable">
-<?php echo $tb_lantai->TableCustomInnerHtml ?>
+<input type="hidden" name="t" value="tb_lokasi">
+<div id="gmp_tb_lokasi" class="<?php if (ew_IsResponsiveLayout()) { echo "table-responsive "; } ?>ewGridMiddlePanel">
+<?php if ($tb_lokasi_list->TotalRecs > 0) { ?>
+<table id="tbl_tb_lokasilist" class="table ewTable">
+<?php echo $tb_lokasi->TableCustomInnerHtml ?>
 <thead><!-- Table header -->
 	<tr class="ewTableHeader">
 <?php
 
 // Header row
-$tb_lantai_list->RowType = EW_ROWTYPE_HEADER;
+$tb_lokasi_list->RowType = EW_ROWTYPE_HEADER;
 
 // Render list options
-$tb_lantai_list->RenderListOptions();
+$tb_lokasi_list->RenderListOptions();
 
 // Render list options (header, left)
-$tb_lantai_list->ListOptions->Render("header", "left");
+$tb_lokasi_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($tb_lantai->lantai_id->Visible) { // lantai_id ?>
-	<?php if ($tb_lantai->SortUrl($tb_lantai->lantai_id) == "") { ?>
-		<th data-name="lantai_id"><div id="elh_tb_lantai_lantai_id" class="tb_lantai_lantai_id"><div class="ewTableHeaderCaption"><?php echo $tb_lantai->lantai_id->FldCaption() ?></div></div></th>
+<?php if ($tb_lokasi->lokasi_id->Visible) { // lokasi_id ?>
+	<?php if ($tb_lokasi->SortUrl($tb_lokasi->lokasi_id) == "") { ?>
+		<th data-name="lokasi_id"><div id="elh_tb_lokasi_lokasi_id" class="tb_lokasi_lokasi_id"><div class="ewTableHeaderCaption"><?php echo $tb_lokasi->lokasi_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="lantai_id"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $tb_lantai->SortUrl($tb_lantai->lantai_id) ?>',1);"><div id="elh_tb_lantai_lantai_id" class="tb_lantai_lantai_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $tb_lantai->lantai_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($tb_lantai->lantai_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($tb_lantai->lantai_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="lokasi_id"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $tb_lokasi->SortUrl($tb_lokasi->lokasi_id) ?>',1);"><div id="elh_tb_lokasi_lokasi_id" class="tb_lokasi_lokasi_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $tb_lokasi->lokasi_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($tb_lokasi->lokasi_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($tb_lokasi->lokasi_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
         </div></div></th>
 	<?php } ?>
 <?php } ?>		
-<?php if ($tb_lantai->lantai_nama->Visible) { // lantai_nama ?>
-	<?php if ($tb_lantai->SortUrl($tb_lantai->lantai_nama) == "") { ?>
-		<th data-name="lantai_nama"><div id="elh_tb_lantai_lantai_nama" class="tb_lantai_lantai_nama"><div class="ewTableHeaderCaption"><?php echo $tb_lantai->lantai_nama->FldCaption() ?></div></div></th>
+<?php if ($tb_lokasi->lantai_id->Visible) { // lantai_id ?>
+	<?php if ($tb_lokasi->SortUrl($tb_lokasi->lantai_id) == "") { ?>
+		<th data-name="lantai_id"><div id="elh_tb_lokasi_lantai_id" class="tb_lokasi_lantai_id"><div class="ewTableHeaderCaption"><?php echo $tb_lokasi->lantai_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="lantai_nama"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $tb_lantai->SortUrl($tb_lantai->lantai_nama) ?>',1);"><div id="elh_tb_lantai_lantai_nama" class="tb_lantai_lantai_nama">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $tb_lantai->lantai_nama->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($tb_lantai->lantai_nama->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($tb_lantai->lantai_nama->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="lantai_id"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $tb_lokasi->SortUrl($tb_lokasi->lantai_id) ?>',1);"><div id="elh_tb_lokasi_lantai_id" class="tb_lokasi_lantai_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $tb_lokasi->lantai_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($tb_lokasi->lantai_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($tb_lokasi->lantai_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+        </div></div></th>
+	<?php } ?>
+<?php } ?>		
+<?php if ($tb_lokasi->lokasi_nama->Visible) { // lokasi_nama ?>
+	<?php if ($tb_lokasi->SortUrl($tb_lokasi->lokasi_nama) == "") { ?>
+		<th data-name="lokasi_nama"><div id="elh_tb_lokasi_lokasi_nama" class="tb_lokasi_lokasi_nama"><div class="ewTableHeaderCaption"><?php echo $tb_lokasi->lokasi_nama->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="lokasi_nama"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $tb_lokasi->SortUrl($tb_lokasi->lokasi_nama) ?>',1);"><div id="elh_tb_lokasi_lokasi_nama" class="tb_lokasi_lokasi_nama">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $tb_lokasi->lokasi_nama->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($tb_lokasi->lokasi_nama->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($tb_lokasi->lokasi_nama->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
         </div></div></th>
 	<?php } ?>
 <?php } ?>		
 <?php
 
 // Render list options (header, right)
-$tb_lantai_list->ListOptions->Render("header", "right");
+$tb_lokasi_list->ListOptions->Render("header", "right");
 ?>
 	</tr>
 </thead>
 <tbody>
 <?php
-if ($tb_lantai->ExportAll && $tb_lantai->Export <> "") {
-	$tb_lantai_list->StopRec = $tb_lantai_list->TotalRecs;
+if ($tb_lokasi->ExportAll && $tb_lokasi->Export <> "") {
+	$tb_lokasi_list->StopRec = $tb_lokasi_list->TotalRecs;
 } else {
 
 	// Set the last record to display
-	if ($tb_lantai_list->TotalRecs > $tb_lantai_list->StartRec + $tb_lantai_list->DisplayRecs - 1)
-		$tb_lantai_list->StopRec = $tb_lantai_list->StartRec + $tb_lantai_list->DisplayRecs - 1;
+	if ($tb_lokasi_list->TotalRecs > $tb_lokasi_list->StartRec + $tb_lokasi_list->DisplayRecs - 1)
+		$tb_lokasi_list->StopRec = $tb_lokasi_list->StartRec + $tb_lokasi_list->DisplayRecs - 1;
 	else
-		$tb_lantai_list->StopRec = $tb_lantai_list->TotalRecs;
+		$tb_lokasi_list->StopRec = $tb_lokasi_list->TotalRecs;
 }
-$tb_lantai_list->RecCnt = $tb_lantai_list->StartRec - 1;
-if ($tb_lantai_list->Recordset && !$tb_lantai_list->Recordset->EOF) {
-	$tb_lantai_list->Recordset->MoveFirst();
-	$bSelectLimit = $tb_lantai_list->UseSelectLimit;
-	if (!$bSelectLimit && $tb_lantai_list->StartRec > 1)
-		$tb_lantai_list->Recordset->Move($tb_lantai_list->StartRec - 1);
-} elseif (!$tb_lantai->AllowAddDeleteRow && $tb_lantai_list->StopRec == 0) {
-	$tb_lantai_list->StopRec = $tb_lantai->GridAddRowCount;
+$tb_lokasi_list->RecCnt = $tb_lokasi_list->StartRec - 1;
+if ($tb_lokasi_list->Recordset && !$tb_lokasi_list->Recordset->EOF) {
+	$tb_lokasi_list->Recordset->MoveFirst();
+	$bSelectLimit = $tb_lokasi_list->UseSelectLimit;
+	if (!$bSelectLimit && $tb_lokasi_list->StartRec > 1)
+		$tb_lokasi_list->Recordset->Move($tb_lokasi_list->StartRec - 1);
+} elseif (!$tb_lokasi->AllowAddDeleteRow && $tb_lokasi_list->StopRec == 0) {
+	$tb_lokasi_list->StopRec = $tb_lokasi->GridAddRowCount;
 }
 
 // Initialize aggregate
-$tb_lantai->RowType = EW_ROWTYPE_AGGREGATEINIT;
-$tb_lantai->ResetAttrs();
-$tb_lantai_list->RenderRow();
-while ($tb_lantai_list->RecCnt < $tb_lantai_list->StopRec) {
-	$tb_lantai_list->RecCnt++;
-	if (intval($tb_lantai_list->RecCnt) >= intval($tb_lantai_list->StartRec)) {
-		$tb_lantai_list->RowCnt++;
+$tb_lokasi->RowType = EW_ROWTYPE_AGGREGATEINIT;
+$tb_lokasi->ResetAttrs();
+$tb_lokasi_list->RenderRow();
+while ($tb_lokasi_list->RecCnt < $tb_lokasi_list->StopRec) {
+	$tb_lokasi_list->RecCnt++;
+	if (intval($tb_lokasi_list->RecCnt) >= intval($tb_lokasi_list->StartRec)) {
+		$tb_lokasi_list->RowCnt++;
 
 		// Set up key count
-		$tb_lantai_list->KeyCount = $tb_lantai_list->RowIndex;
+		$tb_lokasi_list->KeyCount = $tb_lokasi_list->RowIndex;
 
 		// Init row class and style
-		$tb_lantai->ResetAttrs();
-		$tb_lantai->CssClass = "";
-		if ($tb_lantai->CurrentAction == "gridadd") {
+		$tb_lokasi->ResetAttrs();
+		$tb_lokasi->CssClass = "";
+		if ($tb_lokasi->CurrentAction == "gridadd") {
 		} else {
-			$tb_lantai_list->LoadRowValues($tb_lantai_list->Recordset); // Load row values
+			$tb_lokasi_list->LoadRowValues($tb_lokasi_list->Recordset); // Load row values
 		}
-		$tb_lantai->RowType = EW_ROWTYPE_VIEW; // Render view
+		$tb_lokasi->RowType = EW_ROWTYPE_VIEW; // Render view
 
 		// Set up row id / data-rowindex
-		$tb_lantai->RowAttrs = array_merge($tb_lantai->RowAttrs, array('data-rowindex'=>$tb_lantai_list->RowCnt, 'id'=>'r' . $tb_lantai_list->RowCnt . '_tb_lantai', 'data-rowtype'=>$tb_lantai->RowType));
+		$tb_lokasi->RowAttrs = array_merge($tb_lokasi->RowAttrs, array('data-rowindex'=>$tb_lokasi_list->RowCnt, 'id'=>'r' . $tb_lokasi_list->RowCnt . '_tb_lokasi', 'data-rowtype'=>$tb_lokasi->RowType));
 
 		// Render row
-		$tb_lantai_list->RenderRow();
+		$tb_lokasi_list->RenderRow();
 
 		// Render list options
-		$tb_lantai_list->RenderListOptions();
+		$tb_lokasi_list->RenderListOptions();
 ?>
-	<tr<?php echo $tb_lantai->RowAttributes() ?>>
+	<tr<?php echo $tb_lokasi->RowAttributes() ?>>
 <?php
 
 // Render list options (body, left)
-$tb_lantai_list->ListOptions->Render("body", "left", $tb_lantai_list->RowCnt);
+$tb_lokasi_list->ListOptions->Render("body", "left", $tb_lokasi_list->RowCnt);
 ?>
-	<?php if ($tb_lantai->lantai_id->Visible) { // lantai_id ?>
-		<td data-name="lantai_id"<?php echo $tb_lantai->lantai_id->CellAttributes() ?>>
-<span id="el<?php echo $tb_lantai_list->RowCnt ?>_tb_lantai_lantai_id" class="tb_lantai_lantai_id">
-<span<?php echo $tb_lantai->lantai_id->ViewAttributes() ?>>
-<?php echo $tb_lantai->lantai_id->ListViewValue() ?></span>
+	<?php if ($tb_lokasi->lokasi_id->Visible) { // lokasi_id ?>
+		<td data-name="lokasi_id"<?php echo $tb_lokasi->lokasi_id->CellAttributes() ?>>
+<span id="el<?php echo $tb_lokasi_list->RowCnt ?>_tb_lokasi_lokasi_id" class="tb_lokasi_lokasi_id">
+<span<?php echo $tb_lokasi->lokasi_id->ViewAttributes() ?>>
+<?php echo $tb_lokasi->lokasi_id->ListViewValue() ?></span>
 </span>
-<a id="<?php echo $tb_lantai_list->PageObjName . "_row_" . $tb_lantai_list->RowCnt ?>"></a></td>
+<a id="<?php echo $tb_lokasi_list->PageObjName . "_row_" . $tb_lokasi_list->RowCnt ?>"></a></td>
 	<?php } ?>
-	<?php if ($tb_lantai->lantai_nama->Visible) { // lantai_nama ?>
-		<td data-name="lantai_nama"<?php echo $tb_lantai->lantai_nama->CellAttributes() ?>>
-<span id="el<?php echo $tb_lantai_list->RowCnt ?>_tb_lantai_lantai_nama" class="tb_lantai_lantai_nama">
-<span<?php echo $tb_lantai->lantai_nama->ViewAttributes() ?>>
-<?php echo $tb_lantai->lantai_nama->ListViewValue() ?></span>
+	<?php if ($tb_lokasi->lantai_id->Visible) { // lantai_id ?>
+		<td data-name="lantai_id"<?php echo $tb_lokasi->lantai_id->CellAttributes() ?>>
+<span id="el<?php echo $tb_lokasi_list->RowCnt ?>_tb_lokasi_lantai_id" class="tb_lokasi_lantai_id">
+<span<?php echo $tb_lokasi->lantai_id->ViewAttributes() ?>>
+<?php echo $tb_lokasi->lantai_id->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($tb_lokasi->lokasi_nama->Visible) { // lokasi_nama ?>
+		<td data-name="lokasi_nama"<?php echo $tb_lokasi->lokasi_nama->CellAttributes() ?>>
+<span id="el<?php echo $tb_lokasi_list->RowCnt ?>_tb_lokasi_lokasi_nama" class="tb_lokasi_lokasi_nama">
+<span<?php echo $tb_lokasi->lokasi_nama->ViewAttributes() ?>>
+<?php echo $tb_lokasi->lokasi_nama->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
 <?php
 
 // Render list options (body, right)
-$tb_lantai_list->ListOptions->Render("body", "right", $tb_lantai_list->RowCnt);
+$tb_lokasi_list->ListOptions->Render("body", "right", $tb_lokasi_list->RowCnt);
 ?>
 	</tr>
 <?php
 	}
-	if ($tb_lantai->CurrentAction <> "gridadd")
-		$tb_lantai_list->Recordset->MoveNext();
+	if ($tb_lokasi->CurrentAction <> "gridadd")
+		$tb_lokasi_list->Recordset->MoveNext();
 }
 ?>
 </tbody>
 </table>
 <?php } ?>
-<?php if ($tb_lantai->CurrentAction == "") { ?>
+<?php if ($tb_lokasi->CurrentAction == "") { ?>
 <input type="hidden" name="a_list" id="a_list" value="">
 <?php } ?>
 </div>
@@ -2203,61 +2275,61 @@ $tb_lantai_list->ListOptions->Render("body", "right", $tb_lantai_list->RowCnt);
 <?php
 
 // Close recordset
-if ($tb_lantai_list->Recordset)
-	$tb_lantai_list->Recordset->Close();
+if ($tb_lokasi_list->Recordset)
+	$tb_lokasi_list->Recordset->Close();
 ?>
-<?php if ($tb_lantai->Export == "") { ?>
+<?php if ($tb_lokasi->Export == "") { ?>
 <div class="panel-footer ewGridLowerPanel">
-<?php if ($tb_lantai->CurrentAction <> "gridadd" && $tb_lantai->CurrentAction <> "gridedit") { ?>
+<?php if ($tb_lokasi->CurrentAction <> "gridadd" && $tb_lokasi->CurrentAction <> "gridedit") { ?>
 <form name="ewPagerForm" class="ewForm form-inline ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($tb_lantai_list->Pager)) $tb_lantai_list->Pager = new cPrevNextPager($tb_lantai_list->StartRec, $tb_lantai_list->DisplayRecs, $tb_lantai_list->TotalRecs) ?>
-<?php if ($tb_lantai_list->Pager->RecordCount > 0 && $tb_lantai_list->Pager->Visible) { ?>
+<?php if (!isset($tb_lokasi_list->Pager)) $tb_lokasi_list->Pager = new cPrevNextPager($tb_lokasi_list->StartRec, $tb_lokasi_list->DisplayRecs, $tb_lokasi_list->TotalRecs) ?>
+<?php if ($tb_lokasi_list->Pager->RecordCount > 0 && $tb_lokasi_list->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($tb_lantai_list->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $tb_lantai_list->PageUrl() ?>start=<?php echo $tb_lantai_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($tb_lokasi_list->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $tb_lokasi_list->PageUrl() ?>start=<?php echo $tb_lokasi_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($tb_lantai_list->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $tb_lantai_list->PageUrl() ?>start=<?php echo $tb_lantai_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($tb_lokasi_list->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $tb_lokasi_list->PageUrl() ?>start=<?php echo $tb_lokasi_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $tb_lantai_list->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $tb_lokasi_list->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($tb_lantai_list->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $tb_lantai_list->PageUrl() ?>start=<?php echo $tb_lantai_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($tb_lokasi_list->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $tb_lokasi_list->PageUrl() ?>start=<?php echo $tb_lokasi_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($tb_lantai_list->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $tb_lantai_list->PageUrl() ?>start=<?php echo $tb_lantai_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($tb_lokasi_list->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $tb_lokasi_list->PageUrl() ?>start=<?php echo $tb_lokasi_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $tb_lantai_list->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $tb_lokasi_list->Pager->PageCount ?></span>
 </div>
 <div class="ewPager ewRec">
-	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $tb_lantai_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $tb_lantai_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $tb_lantai_list->Pager->RecordCount ?></span>
+	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $tb_lokasi_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $tb_lokasi_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $tb_lokasi_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
 </form>
 <?php } ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($tb_lantai_list->OtherOptions as &$option)
+	foreach ($tb_lokasi_list->OtherOptions as &$option)
 		$option->Render("body", "bottom");
 ?>
 </div>
@@ -2266,10 +2338,10 @@ if ($tb_lantai_list->Recordset)
 <?php } ?>
 </div>
 <?php } ?>
-<?php if ($tb_lantai_list->TotalRecs == 0 && $tb_lantai->CurrentAction == "") { // Show other options ?>
+<?php if ($tb_lokasi_list->TotalRecs == 0 && $tb_lokasi->CurrentAction == "") { // Show other options ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($tb_lantai_list->OtherOptions as &$option) {
+	foreach ($tb_lokasi_list->OtherOptions as &$option) {
 		$option->ButtonClass = "";
 		$option->Render("body", "");
 	}
@@ -2277,19 +2349,19 @@ if ($tb_lantai_list->Recordset)
 </div>
 <div class="clearfix"></div>
 <?php } ?>
-<?php if ($tb_lantai->Export == "") { ?>
+<?php if ($tb_lokasi->Export == "") { ?>
 <script type="text/javascript">
-ftb_lantailistsrch.FilterList = <?php echo $tb_lantai_list->GetFilterList() ?>;
-ftb_lantailistsrch.Init();
-ftb_lantailist.Init();
+ftb_lokasilistsrch.FilterList = <?php echo $tb_lokasi_list->GetFilterList() ?>;
+ftb_lokasilistsrch.Init();
+ftb_lokasilist.Init();
 </script>
 <?php } ?>
 <?php
-$tb_lantai_list->ShowPageFooter();
+$tb_lokasi_list->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($tb_lantai->Export == "") { ?>
+<?php if ($tb_lokasi->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -2299,5 +2371,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$tb_lantai_list->Page_Terminate();
+$tb_lokasi_list->Page_Terminate();
 ?>

@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg13.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql13.php") ?>
 <?php include_once "phpfn13.php" ?>
-<?php include_once "tb_lantaiinfo.php" ?>
+<?php include_once "tb_lokasiinfo.php" ?>
 <?php include_once "userfn13.php" ?>
 <?php
 
@@ -13,9 +13,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$tb_lantai_delete = NULL; // Initialize page object first
+$tb_lokasi_delete = NULL; // Initialize page object first
 
-class ctb_lantai_delete extends ctb_lantai {
+class ctb_lokasi_delete extends ctb_lokasi {
 
 	// Page ID
 	var $PageID = 'delete';
@@ -24,10 +24,10 @@ class ctb_lantai_delete extends ctb_lantai {
 	var $ProjectID = "{32C4CE20-1B57-4C82-8475-08C0302816A6}";
 
 	// Table name
-	var $TableName = 'tb_lantai';
+	var $TableName = 'tb_lokasi';
 
 	// Page object name
-	var $PageObjName = 'tb_lantai_delete';
+	var $PageObjName = 'tb_lokasi_delete';
 
 	// Page name
 	function PageName() {
@@ -224,10 +224,10 @@ class ctb_lantai_delete extends ctb_lantai {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (tb_lantai)
-		if (!isset($GLOBALS["tb_lantai"]) || get_class($GLOBALS["tb_lantai"]) == "ctb_lantai") {
-			$GLOBALS["tb_lantai"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["tb_lantai"];
+		// Table object (tb_lokasi)
+		if (!isset($GLOBALS["tb_lokasi"]) || get_class($GLOBALS["tb_lokasi"]) == "ctb_lokasi") {
+			$GLOBALS["tb_lokasi"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["tb_lokasi"];
 		}
 
 		// Page ID
@@ -236,7 +236,7 @@ class ctb_lantai_delete extends ctb_lantai {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'tb_lantai', TRUE);
+			define("EW_TABLE_NAME", 'tb_lokasi', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"])) $GLOBALS["gTimer"] = new cTimer();
@@ -259,14 +259,15 @@ class ctb_lantai_delete extends ctb_lantai {
 			$Security->SaveLastUrl();
 			$this->setFailureMessage(ew_DeniedMsg()); // Set no permission
 			if ($Security->CanList())
-				$this->Page_Terminate(ew_GetUrl("tb_lantailist.php"));
+				$this->Page_Terminate(ew_GetUrl("tb_lokasilist.php"));
 			else
 				$this->Page_Terminate(ew_GetUrl("login.php"));
 		}
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
+		$this->lokasi_id->SetVisibility();
+		$this->lokasi_id->Visible = !$this->IsAdd() && !$this->IsCopy() && !$this->IsGridAdd();
 		$this->lantai_id->SetVisibility();
-		$this->lantai_id->Visible = !$this->IsAdd() && !$this->IsCopy() && !$this->IsGridAdd();
-		$this->lantai_nama->SetVisibility();
+		$this->lokasi_nama->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -298,13 +299,13 @@ class ctb_lantai_delete extends ctb_lantai {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $tb_lantai;
+		global $EW_EXPORT, $tb_lokasi;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($tb_lantai);
+				$doc = new $class($tb_lokasi);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -350,10 +351,10 @@ class ctb_lantai_delete extends ctb_lantai {
 		$this->RecKeys = $this->GetRecordKeys(); // Load record keys
 		$sFilter = $this->GetKeyFilter();
 		if ($sFilter == "")
-			$this->Page_Terminate("tb_lantailist.php"); // Prevent SQL injection, return to list
+			$this->Page_Terminate("tb_lokasilist.php"); // Prevent SQL injection, return to list
 
 		// Set up filter (SQL WHHERE clause) and get return SQL
-		// SQL constructor in tb_lantai class, tb_lantaiinfo.php
+		// SQL constructor in tb_lokasi class, tb_lokasiinfo.php
 
 		$this->CurrentFilter = $sFilter;
 
@@ -381,7 +382,7 @@ class ctb_lantai_delete extends ctb_lantai {
 			if ($this->TotalRecs <= 0) { // No record found, exit
 				if ($this->Recordset)
 					$this->Recordset->Close();
-				$this->Page_Terminate("tb_lantailist.php"); // Return to list
+				$this->Page_Terminate("tb_lokasilist.php"); // Return to list
 			}
 		}
 	}
@@ -398,7 +399,7 @@ class ctb_lantai_delete extends ctb_lantai {
 		if ($this->UseSelectLimit) {
 			$conn->raiseErrorFn = $GLOBALS["EW_ERROR_FN"];
 			if ($dbtype == "MSSQL") {
-				$rs = $conn->SelectLimit($sSql, $rowcnt, $offset, array("_hasOrderBy" => trim($this->getOrderBy()) || trim($this->getSessionOrderBy())));
+				$rs = $conn->SelectLimit($sSql, $rowcnt, $offset, array("_hasOrderBy" => trim($this->getOrderBy()) || trim($this->getSessionOrderByList())));
 			} else {
 				$rs = $conn->SelectLimit($sSql, $rowcnt, $offset);
 			}
@@ -441,16 +442,23 @@ class ctb_lantai_delete extends ctb_lantai {
 		// Call Row Selected event
 		$row = &$rs->fields;
 		$this->Row_Selected($row);
+		$this->lokasi_id->setDbValue($rs->fields('lokasi_id'));
 		$this->lantai_id->setDbValue($rs->fields('lantai_id'));
-		$this->lantai_nama->setDbValue($rs->fields('lantai_nama'));
+		if (array_key_exists('EV__lantai_id', $rs->fields)) {
+			$this->lantai_id->VirtualValue = $rs->fields('EV__lantai_id'); // Set up virtual field value
+		} else {
+			$this->lantai_id->VirtualValue = ""; // Clear value
+		}
+		$this->lokasi_nama->setDbValue($rs->fields('lokasi_nama'));
 	}
 
 	// Load DbValue from recordset
 	function LoadDbValues(&$rs) {
 		if (!$rs || !is_array($rs) && $rs->EOF) return;
 		$row = is_array($rs) ? $rs : $rs->fields;
+		$this->lokasi_id->DbValue = $row['lokasi_id'];
 		$this->lantai_id->DbValue = $row['lantai_id'];
-		$this->lantai_nama->DbValue = $row['lantai_nama'];
+		$this->lokasi_nama->DbValue = $row['lokasi_nama'];
 	}
 
 	// Render row values based on field settings
@@ -463,28 +471,62 @@ class ctb_lantai_delete extends ctb_lantai {
 		$this->Row_Rendering();
 
 		// Common render codes for all row types
+		// lokasi_id
 		// lantai_id
-		// lantai_nama
+		// lokasi_nama
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
+		// lokasi_id
+		$this->lokasi_id->ViewValue = $this->lokasi_id->CurrentValue;
+		$this->lokasi_id->ViewCustomAttributes = "";
+
 		// lantai_id
-		$this->lantai_id->ViewValue = $this->lantai_id->CurrentValue;
+		if ($this->lantai_id->VirtualValue <> "") {
+			$this->lantai_id->ViewValue = $this->lantai_id->VirtualValue;
+		} else {
+			$this->lantai_id->ViewValue = $this->lantai_id->CurrentValue;
+		if (strval($this->lantai_id->CurrentValue) <> "") {
+			$sFilterWrk = "`lantai_id`" . ew_SearchString("=", $this->lantai_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `lantai_id`, `lantai_nama` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `tb_lantai`";
+		$sWhereWrk = "";
+		$this->lantai_id->LookupFilters = array("dx1" => '`lantai_nama`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->lantai_id, $sWhereWrk); // Call Lookup selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->lantai_id->ViewValue = $this->lantai_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->lantai_id->ViewValue = $this->lantai_id->CurrentValue;
+			}
+		} else {
+			$this->lantai_id->ViewValue = NULL;
+		}
+		}
 		$this->lantai_id->ViewCustomAttributes = "";
 
-		// lantai_nama
-		$this->lantai_nama->ViewValue = $this->lantai_nama->CurrentValue;
-		$this->lantai_nama->ViewCustomAttributes = "";
+		// lokasi_nama
+		$this->lokasi_nama->ViewValue = $this->lokasi_nama->CurrentValue;
+		$this->lokasi_nama->ViewCustomAttributes = "";
+
+			// lokasi_id
+			$this->lokasi_id->LinkCustomAttributes = "";
+			$this->lokasi_id->HrefValue = "";
+			$this->lokasi_id->TooltipValue = "";
 
 			// lantai_id
 			$this->lantai_id->LinkCustomAttributes = "";
 			$this->lantai_id->HrefValue = "";
 			$this->lantai_id->TooltipValue = "";
 
-			// lantai_nama
-			$this->lantai_nama->LinkCustomAttributes = "";
-			$this->lantai_nama->HrefValue = "";
-			$this->lantai_nama->TooltipValue = "";
+			// lokasi_nama
+			$this->lokasi_nama->LinkCustomAttributes = "";
+			$this->lokasi_nama->HrefValue = "";
+			$this->lokasi_nama->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -534,7 +576,7 @@ class ctb_lantai_delete extends ctb_lantai {
 			foreach ($rsold as $row) {
 				$sThisKey = "";
 				if ($sThisKey <> "") $sThisKey .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
-				$sThisKey .= $row['lantai_id'];
+				$sThisKey .= $row['lokasi_id'];
 				$conn->raiseErrorFn = $GLOBALS["EW_ERROR_FN"];
 				$DeleteRows = $this->Delete($row); // Delete
 				$conn->raiseErrorFn = '';
@@ -576,7 +618,7 @@ class ctb_lantai_delete extends ctb_lantai {
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new cBreadcrumb();
 		$url = substr(ew_CurrentUrl(), strrpos(ew_CurrentUrl(), "/")+1);
-		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("tb_lantailist.php"), "", $this->TableVar, TRUE);
+		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("tb_lokasilist.php"), "", $this->TableVar, TRUE);
 		$PageId = "delete";
 		$Breadcrumb->Add("delete", $PageId, $url);
 	}
@@ -662,29 +704,29 @@ class ctb_lantai_delete extends ctb_lantai {
 <?php
 
 // Create page object
-if (!isset($tb_lantai_delete)) $tb_lantai_delete = new ctb_lantai_delete();
+if (!isset($tb_lokasi_delete)) $tb_lokasi_delete = new ctb_lokasi_delete();
 
 // Page init
-$tb_lantai_delete->Page_Init();
+$tb_lokasi_delete->Page_Init();
 
 // Page main
-$tb_lantai_delete->Page_Main();
+$tb_lokasi_delete->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$tb_lantai_delete->Page_Render();
+$tb_lokasi_delete->Page_Render();
 ?>
 <?php include_once "header.php" ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "delete";
-var CurrentForm = ftb_lantaidelete = new ew_Form("ftb_lantaidelete", "delete");
+var CurrentForm = ftb_lokasidelete = new ew_Form("ftb_lokasidelete", "delete");
 
 // Form_CustomValidate event
-ftb_lantaidelete.Form_CustomValidate = 
+ftb_lokasidelete.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid. 
@@ -693,14 +735,15 @@ ftb_lantaidelete.Form_CustomValidate =
 
 // Use JavaScript validation or not
 <?php if (EW_CLIENT_VALIDATE) { ?>
-ftb_lantaidelete.ValidateRequired = true;
+ftb_lokasidelete.ValidateRequired = true;
 <?php } else { ?>
-ftb_lantaidelete.ValidateRequired = false; 
+ftb_lokasidelete.ValidateRequired = false; 
 <?php } ?>
 
 // Dynamic selection lists
-// Form object for search
+ftb_lokasidelete.Lists["x_lantai_id"] = {"LinkField":"x_lantai_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_lantai_nama","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"tb_lantai"};
 
+// Form object for search
 </script>
 <script type="text/javascript">
 
@@ -711,74 +754,85 @@ ftb_lantaidelete.ValidateRequired = false;
 <?php echo $Language->SelectionForm(); ?>
 <div class="clearfix"></div>
 </div>
-<?php $tb_lantai_delete->ShowPageHeader(); ?>
+<?php $tb_lokasi_delete->ShowPageHeader(); ?>
 <?php
-$tb_lantai_delete->ShowMessage();
+$tb_lokasi_delete->ShowMessage();
 ?>
-<form name="ftb_lantaidelete" id="ftb_lantaidelete" class="form-inline ewForm ewDeleteForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($tb_lantai_delete->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $tb_lantai_delete->Token ?>">
+<form name="ftb_lokasidelete" id="ftb_lokasidelete" class="form-inline ewForm ewDeleteForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($tb_lokasi_delete->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $tb_lokasi_delete->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="tb_lantai">
+<input type="hidden" name="t" value="tb_lokasi">
 <input type="hidden" name="a_delete" id="a_delete" value="D">
-<?php foreach ($tb_lantai_delete->RecKeys as $key) { ?>
+<?php foreach ($tb_lokasi_delete->RecKeys as $key) { ?>
 <?php $keyvalue = is_array($key) ? implode($EW_COMPOSITE_KEY_SEPARATOR, $key) : $key; ?>
 <input type="hidden" name="key_m[]" value="<?php echo ew_HtmlEncode($keyvalue) ?>">
 <?php } ?>
 <div class="ewGrid">
 <div class="<?php if (ew_IsResponsiveLayout()) { echo "table-responsive "; } ?>ewGridMiddlePanel">
 <table class="table ewTable">
-<?php echo $tb_lantai->TableCustomInnerHtml ?>
+<?php echo $tb_lokasi->TableCustomInnerHtml ?>
 	<thead>
 	<tr class="ewTableHeader">
-<?php if ($tb_lantai->lantai_id->Visible) { // lantai_id ?>
-		<th><span id="elh_tb_lantai_lantai_id" class="tb_lantai_lantai_id"><?php echo $tb_lantai->lantai_id->FldCaption() ?></span></th>
+<?php if ($tb_lokasi->lokasi_id->Visible) { // lokasi_id ?>
+		<th><span id="elh_tb_lokasi_lokasi_id" class="tb_lokasi_lokasi_id"><?php echo $tb_lokasi->lokasi_id->FldCaption() ?></span></th>
 <?php } ?>
-<?php if ($tb_lantai->lantai_nama->Visible) { // lantai_nama ?>
-		<th><span id="elh_tb_lantai_lantai_nama" class="tb_lantai_lantai_nama"><?php echo $tb_lantai->lantai_nama->FldCaption() ?></span></th>
+<?php if ($tb_lokasi->lantai_id->Visible) { // lantai_id ?>
+		<th><span id="elh_tb_lokasi_lantai_id" class="tb_lokasi_lantai_id"><?php echo $tb_lokasi->lantai_id->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($tb_lokasi->lokasi_nama->Visible) { // lokasi_nama ?>
+		<th><span id="elh_tb_lokasi_lokasi_nama" class="tb_lokasi_lokasi_nama"><?php echo $tb_lokasi->lokasi_nama->FldCaption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
 	<tbody>
 <?php
-$tb_lantai_delete->RecCnt = 0;
+$tb_lokasi_delete->RecCnt = 0;
 $i = 0;
-while (!$tb_lantai_delete->Recordset->EOF) {
-	$tb_lantai_delete->RecCnt++;
-	$tb_lantai_delete->RowCnt++;
+while (!$tb_lokasi_delete->Recordset->EOF) {
+	$tb_lokasi_delete->RecCnt++;
+	$tb_lokasi_delete->RowCnt++;
 
 	// Set row properties
-	$tb_lantai->ResetAttrs();
-	$tb_lantai->RowType = EW_ROWTYPE_VIEW; // View
+	$tb_lokasi->ResetAttrs();
+	$tb_lokasi->RowType = EW_ROWTYPE_VIEW; // View
 
 	// Get the field contents
-	$tb_lantai_delete->LoadRowValues($tb_lantai_delete->Recordset);
+	$tb_lokasi_delete->LoadRowValues($tb_lokasi_delete->Recordset);
 
 	// Render row
-	$tb_lantai_delete->RenderRow();
+	$tb_lokasi_delete->RenderRow();
 ?>
-	<tr<?php echo $tb_lantai->RowAttributes() ?>>
-<?php if ($tb_lantai->lantai_id->Visible) { // lantai_id ?>
-		<td<?php echo $tb_lantai->lantai_id->CellAttributes() ?>>
-<span id="el<?php echo $tb_lantai_delete->RowCnt ?>_tb_lantai_lantai_id" class="tb_lantai_lantai_id">
-<span<?php echo $tb_lantai->lantai_id->ViewAttributes() ?>>
-<?php echo $tb_lantai->lantai_id->ListViewValue() ?></span>
+	<tr<?php echo $tb_lokasi->RowAttributes() ?>>
+<?php if ($tb_lokasi->lokasi_id->Visible) { // lokasi_id ?>
+		<td<?php echo $tb_lokasi->lokasi_id->CellAttributes() ?>>
+<span id="el<?php echo $tb_lokasi_delete->RowCnt ?>_tb_lokasi_lokasi_id" class="tb_lokasi_lokasi_id">
+<span<?php echo $tb_lokasi->lokasi_id->ViewAttributes() ?>>
+<?php echo $tb_lokasi->lokasi_id->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>
-<?php if ($tb_lantai->lantai_nama->Visible) { // lantai_nama ?>
-		<td<?php echo $tb_lantai->lantai_nama->CellAttributes() ?>>
-<span id="el<?php echo $tb_lantai_delete->RowCnt ?>_tb_lantai_lantai_nama" class="tb_lantai_lantai_nama">
-<span<?php echo $tb_lantai->lantai_nama->ViewAttributes() ?>>
-<?php echo $tb_lantai->lantai_nama->ListViewValue() ?></span>
+<?php if ($tb_lokasi->lantai_id->Visible) { // lantai_id ?>
+		<td<?php echo $tb_lokasi->lantai_id->CellAttributes() ?>>
+<span id="el<?php echo $tb_lokasi_delete->RowCnt ?>_tb_lokasi_lantai_id" class="tb_lokasi_lantai_id">
+<span<?php echo $tb_lokasi->lantai_id->ViewAttributes() ?>>
+<?php echo $tb_lokasi->lantai_id->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($tb_lokasi->lokasi_nama->Visible) { // lokasi_nama ?>
+		<td<?php echo $tb_lokasi->lokasi_nama->CellAttributes() ?>>
+<span id="el<?php echo $tb_lokasi_delete->RowCnt ?>_tb_lokasi_lokasi_nama" class="tb_lokasi_lokasi_nama">
+<span<?php echo $tb_lokasi->lokasi_nama->ViewAttributes() ?>>
+<?php echo $tb_lokasi->lokasi_nama->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>
 	</tr>
 <?php
-	$tb_lantai_delete->Recordset->MoveNext();
+	$tb_lokasi_delete->Recordset->MoveNext();
 }
-$tb_lantai_delete->Recordset->Close();
+$tb_lokasi_delete->Recordset->Close();
 ?>
 </tbody>
 </table>
@@ -786,14 +840,14 @@ $tb_lantai_delete->Recordset->Close();
 </div>
 <div>
 <button class="btn btn-primary ewButton" name="btnAction" id="btnAction" type="submit"><?php echo $Language->Phrase("DeleteBtn") ?></button>
-<button class="btn btn-default ewButton" name="btnCancel" id="btnCancel" type="button" data-href="<?php echo $tb_lantai_delete->getReturnUrl() ?>"><?php echo $Language->Phrase("CancelBtn") ?></button>
+<button class="btn btn-default ewButton" name="btnCancel" id="btnCancel" type="button" data-href="<?php echo $tb_lokasi_delete->getReturnUrl() ?>"><?php echo $Language->Phrase("CancelBtn") ?></button>
 </div>
 </form>
 <script type="text/javascript">
-ftb_lantaidelete.Init();
+ftb_lokasidelete.Init();
 </script>
 <?php
-$tb_lantai_delete->ShowPageFooter();
+$tb_lokasi_delete->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
@@ -805,5 +859,5 @@ if (EW_DEBUG_ENABLED)
 </script>
 <?php include_once "footer.php" ?>
 <?php
-$tb_lantai_delete->Page_Terminate();
+$tb_lokasi_delete->Page_Terminate();
 ?>

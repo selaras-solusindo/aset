@@ -19,7 +19,7 @@ class cewlookup {
 	var $PageID = "lookup";
 
 	// Project ID
-	var $ProjectID = "{d355b560-9db6-4a61-98db-c59c7f5b462a}";
+	var $ProjectID = "{32C4CE20-1B57-4C82-8475-08C0302816A6}";
 
 	// Page object name
 	var $PageObjName = "lookup";

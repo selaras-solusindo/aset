@@ -1,12 +1,15 @@
 <?php
 
 // Global variable for table object
-$audittrail = NULL;
+$tb_lokasi = NULL;
 
 //
-// Table class for audittrail
+// Table class for tb_lokasi
 //
-class caudittrail extends cTable {
+class ctb_lokasi extends cTable {
+	var $lokasi_id;
+	var $lantai_id;
+	var $lokasi_nama;
 
 	//
 	// Table class constructor
@@ -16,12 +19,12 @@ class caudittrail extends cTable {
 
 		// Language object
 		if (!isset($Language)) $Language = new cLanguage();
-		$this->TableVar = 'audittrail';
-		$this->TableName = 'audittrail';
+		$this->TableVar = 'tb_lokasi';
+		$this->TableName = 'tb_lokasi';
 		$this->TableType = 'TABLE';
 
 		// Update Table
-		$this->UpdateTable = "`audittrail`";
+		$this->UpdateTable = "`tb_lokasi`";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -37,6 +40,23 @@ class caudittrail extends cTable {
 		$this->AllowAddDeleteRow = ew_AllowAddDeleteRow(); // Allow add/delete row
 		$this->UserIDAllowSecurity = 0; // User ID Allow
 		$this->BasicSearch = new cBasicSearch($this->TableVar);
+
+		// lokasi_id
+		$this->lokasi_id = new cField('tb_lokasi', 'tb_lokasi', 'x_lokasi_id', 'lokasi_id', '`lokasi_id`', '`lokasi_id`', 2, -1, FALSE, '`lokasi_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->lokasi_id->Sortable = TRUE; // Allow sort
+		$this->lokasi_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['lokasi_id'] = &$this->lokasi_id;
+
+		// lantai_id
+		$this->lantai_id = new cField('tb_lokasi', 'tb_lokasi', 'x_lantai_id', 'lantai_id', '`lantai_id`', '`lantai_id`', 16, -1, FALSE, '`EV__lantai_id`', TRUE, TRUE, TRUE, 'FORMATTED TEXT', 'TEXT');
+		$this->lantai_id->Sortable = TRUE; // Allow sort
+		$this->lantai_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['lantai_id'] = &$this->lantai_id;
+
+		// lokasi_nama
+		$this->lokasi_nama = new cField('tb_lokasi', 'tb_lokasi', 'x_lokasi_nama', 'lokasi_nama', '`lokasi_nama`', '`lokasi_nama`', 201, -1, FALSE, '`lokasi_nama`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->lokasi_nama->Sortable = TRUE; // Allow sort
+		$this->fields['lokasi_nama'] = &$this->lokasi_nama;
 	}
 
 	// Set Field Visibility
@@ -57,16 +77,27 @@ class caudittrail extends cTable {
 			}
 			$ofld->setSort($sThisSort);
 			$this->setSessionOrderBy($sSortField . " " . $sThisSort); // Save to Session
+			$sSortFieldList = ($ofld->FldVirtualExpression <> "") ? $ofld->FldVirtualExpression : $sSortField;
+			$this->setSessionOrderByList($sSortFieldList . " " . $sThisSort); // Save to Session
 		} else {
 			$ofld->setSort("");
 		}
+	}
+
+	// Session ORDER BY for List page
+	function getSessionOrderByList() {
+		return @$_SESSION[EW_PROJECT_NAME . "_" . $this->TableVar . "_" . EW_TABLE_ORDER_BY_LIST];
+	}
+
+	function setSessionOrderByList($v) {
+		$_SESSION[EW_PROJECT_NAME . "_" . $this->TableVar . "_" . EW_TABLE_ORDER_BY_LIST] = $v;
 	}
 
 	// Table level SQL
 	var $_SqlFrom = "";
 
 	function getSqlFrom() { // From
-		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`audittrail`";
+		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`tb_lokasi`";
 	}
 
 	function SqlFrom() { // For backward compatibility
@@ -88,6 +119,23 @@ class caudittrail extends cTable {
 
 	function setSqlSelect($v) {
 		$this->_SqlSelect = $v;
+	}
+	var $_SqlSelectList = "";
+
+	function getSqlSelectList() { // Select for List page
+		$select = "";
+		$select = "SELECT * FROM (" .
+			"SELECT *, (SELECT `lantai_nama` FROM `tb_lantai` `EW_TMP_LOOKUPTABLE` WHERE `EW_TMP_LOOKUPTABLE`.`lantai_id` = `tb_lokasi`.`lantai_id` LIMIT 1) AS `EV__lantai_id` FROM `tb_lokasi`" .
+			") `EW_TMP_TABLE`";
+		return ($this->_SqlSelectList <> "") ? $this->_SqlSelectList : $select;
+	}
+
+	function SqlSelectList() { // For backward compatibility
+		return $this->getSqlSelectList();
+	}
+
+	function setSqlSelectList($v) {
+		$this->_SqlSelectList = $v;
 	}
 	var $_SqlWhere = "";
 
@@ -200,15 +248,38 @@ class caudittrail extends cTable {
 		ew_AddFilter($sFilter, $this->CurrentFilter);
 		$sFilter = $this->ApplyUserIDFilters($sFilter);
 		$this->Recordset_Selecting($sFilter);
-		$sSort = $this->getSessionOrderBy();
-		return ew_BuildSelectSql($this->getSqlSelect(), $this->getSqlWhere(), $this->getSqlGroupBy(),
-			$this->getSqlHaving(), $this->getSqlOrderBy(), $sFilter, $sSort);
+		if ($this->UseVirtualFields()) {
+			$sSort = $this->getSessionOrderByList();
+			return ew_BuildSelectSql($this->getSqlSelectList(), $this->getSqlWhere(), $this->getSqlGroupBy(),
+				$this->getSqlHaving(), $this->getSqlOrderBy(), $sFilter, $sSort);
+		} else {
+			$sSort = $this->getSessionOrderBy();
+			return ew_BuildSelectSql($this->getSqlSelect(), $this->getSqlWhere(), $this->getSqlGroupBy(),
+				$this->getSqlHaving(), $this->getSqlOrderBy(), $sFilter, $sSort);
+		}
 	}
 
 	// Get ORDER BY clause
 	function GetOrderBy() {
-		$sSort = $this->getSessionOrderBy();
+		$sSort = ($this->UseVirtualFields()) ? $this->getSessionOrderByList() : $this->getSessionOrderBy();
 		return ew_BuildSelectSql("", "", "", "", $this->getSqlOrderBy(), "", $sSort);
+	}
+
+	// Check if virtual fields is used in SQL
+	function UseVirtualFields() {
+		$sWhere = $this->getSessionWhere();
+		$sOrderBy = $this->getSessionOrderByList();
+		if ($sWhere <> "")
+			$sWhere = " " . str_replace(array("(",")"), array("",""), $sWhere) . " ";
+		if ($sOrderBy <> "")
+			$sOrderBy = " " . str_replace(array("(",")"), array("",""), $sOrderBy) . " ";
+		if ($this->lantai_id->AdvancedSearch->SearchValue <> "" ||
+			$this->lantai_id->AdvancedSearch->SearchValue2 <> "" ||
+			strpos($sWhere, " " . $this->lantai_id->FldVirtualExpression . " ") !== FALSE)
+			return TRUE;
+		if (strpos($sOrderBy, " " . $this->lantai_id->FldVirtualExpression . " ") !== FALSE)
+			return TRUE;
+		return FALSE;
 	}
 
 	// Try to get record count
@@ -319,6 +390,8 @@ class caudittrail extends cTable {
 		if (is_array($where))
 			$where = $this->ArrayToFilter($where);
 		if ($rs) {
+			if (array_key_exists('lokasi_id', $rs))
+				ew_AddFilter($where, ew_QuotedName('lokasi_id', $this->DBID) . '=' . ew_QuotedValue($rs['lokasi_id'], $this->lokasi_id->FldDataType, $this->DBID));
 		}
 		$filter = ($curfilter) ? $this->CurrentFilter : "";
 		ew_AddFilter($filter, $where);
@@ -337,12 +410,15 @@ class caudittrail extends cTable {
 
 	// Key filter WHERE clause
 	function SqlKeyFilter() {
-		return "";
+		return "`lokasi_id` = @lokasi_id@";
 	}
 
 	// Key filter
 	function KeyFilter() {
 		$sKeyFilter = $this->SqlKeyFilter();
+		if (!is_numeric($this->lokasi_id->CurrentValue))
+			$sKeyFilter = "0=1"; // Invalid key
+		$sKeyFilter = str_replace("@lokasi_id@", ew_AdjustSql($this->lokasi_id->CurrentValue, $this->DBID), $sKeyFilter); // Replace key value
 		return $sKeyFilter;
 	}
 
@@ -356,7 +432,7 @@ class caudittrail extends cTable {
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "audittraillist.php";
+			return "tb_lokasilist.php";
 		}
 	}
 
@@ -366,30 +442,30 @@ class caudittrail extends cTable {
 
 	// List URL
 	function GetListUrl() {
-		return "audittraillist.php";
+		return "tb_lokasilist.php";
 	}
 
 	// View URL
 	function GetViewUrl($parm = "") {
 		if ($parm <> "")
-			$url = $this->KeyUrl("audittrailview.php", $this->UrlParm($parm));
+			$url = $this->KeyUrl("tb_lokasiview.php", $this->UrlParm($parm));
 		else
-			$url = $this->KeyUrl("audittrailview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
+			$url = $this->KeyUrl("tb_lokasiview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
 		return $this->AddMasterUrl($url);
 	}
 
 	// Add URL
 	function GetAddUrl($parm = "") {
 		if ($parm <> "")
-			$url = "audittrailadd.php?" . $this->UrlParm($parm);
+			$url = "tb_lokasiadd.php?" . $this->UrlParm($parm);
 		else
-			$url = "audittrailadd.php";
+			$url = "tb_lokasiadd.php";
 		return $this->AddMasterUrl($url);
 	}
 
 	// Edit URL
 	function GetEditUrl($parm = "") {
-		$url = $this->KeyUrl("audittrailedit.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("tb_lokasiedit.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -401,7 +477,7 @@ class caudittrail extends cTable {
 
 	// Copy URL
 	function GetCopyUrl($parm = "") {
-		$url = $this->KeyUrl("audittrailadd.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("tb_lokasiadd.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -413,7 +489,7 @@ class caudittrail extends cTable {
 
 	// Delete URL
 	function GetDeleteUrl() {
-		return $this->KeyUrl("audittraildelete.php", $this->UrlParm());
+		return $this->KeyUrl("tb_lokasidelete.php", $this->UrlParm());
 	}
 
 	// Add master url
@@ -423,6 +499,7 @@ class caudittrail extends cTable {
 
 	function KeyToJson() {
 		$json = "";
+		$json .= "lokasi_id:" . ew_VarToJson($this->lokasi_id->CurrentValue, "number", "'");
 		return "{" . $json . "}";
 	}
 
@@ -430,6 +507,11 @@ class caudittrail extends cTable {
 	function KeyUrl($url, $parm = "") {
 		$sUrl = $url . "?";
 		if ($parm <> "") $sUrl .= $parm . "&";
+		if (!is_null($this->lokasi_id->CurrentValue)) {
+			$sUrl .= "lokasi_id=" . urlencode($this->lokasi_id->CurrentValue);
+		} else {
+			return "javascript:ew_Alert(ewLanguage.Phrase('InvalidRecord'));";
+		}
 		return $sUrl;
 	}
 
@@ -459,6 +541,12 @@ class caudittrail extends cTable {
 			$cnt = count($arKeys);
 		} elseif (!empty($_GET) || !empty($_POST)) {
 			$isPost = ew_IsHttpPost();
+			if ($isPost && isset($_POST["lokasi_id"]))
+				$arKeys[] = ew_StripSlashes($_POST["lokasi_id"]);
+			elseif (isset($_GET["lokasi_id"]))
+				$arKeys[] = ew_StripSlashes($_GET["lokasi_id"]);
+			else
+				$arKeys = NULL; // Do not setup
 
 			//return $arKeys; // Do not return yet, so the values will also be checked by the following code
 		}
@@ -467,6 +555,8 @@ class caudittrail extends cTable {
 		$ar = array();
 		if (is_array($arKeys)) {
 			foreach ($arKeys as $key) {
+				if (!is_numeric($key))
+					continue;
 				$ar[] = $key;
 			}
 		}
@@ -479,6 +569,7 @@ class caudittrail extends cTable {
 		$sKeyFilter = "";
 		foreach ($arKeys as $key) {
 			if ($sKeyFilter <> "") $sKeyFilter .= " OR ";
+			$this->lokasi_id->CurrentValue = $key;
 			$sKeyFilter .= "(" . $this->KeyFilter() . ")";
 		}
 		return $sKeyFilter;
@@ -499,6 +590,9 @@ class caudittrail extends cTable {
 
 	// Load row values from recordset
 	function LoadListRowValues(&$rs) {
+		$this->lokasi_id->setDbValue($rs->fields('lokasi_id'));
+		$this->lantai_id->setDbValue($rs->fields('lantai_id'));
+		$this->lokasi_nama->setDbValue($rs->fields('lokasi_nama'));
 	}
 
 	// Render list row values
@@ -509,8 +603,62 @@ class caudittrail extends cTable {
 		$this->Row_Rendering();
 
    // Common render codes
-		// Call Row Rendered event
+		// lokasi_id
+		// lantai_id
+		// lokasi_nama
+		// lokasi_id
 
+		$this->lokasi_id->ViewValue = $this->lokasi_id->CurrentValue;
+		$this->lokasi_id->ViewCustomAttributes = "";
+
+		// lantai_id
+		if ($this->lantai_id->VirtualValue <> "") {
+			$this->lantai_id->ViewValue = $this->lantai_id->VirtualValue;
+		} else {
+			$this->lantai_id->ViewValue = $this->lantai_id->CurrentValue;
+		if (strval($this->lantai_id->CurrentValue) <> "") {
+			$sFilterWrk = "`lantai_id`" . ew_SearchString("=", $this->lantai_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `lantai_id`, `lantai_nama` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `tb_lantai`";
+		$sWhereWrk = "";
+		$this->lantai_id->LookupFilters = array("dx1" => '`lantai_nama`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->lantai_id, $sWhereWrk); // Call Lookup selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->lantai_id->ViewValue = $this->lantai_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->lantai_id->ViewValue = $this->lantai_id->CurrentValue;
+			}
+		} else {
+			$this->lantai_id->ViewValue = NULL;
+		}
+		}
+		$this->lantai_id->ViewCustomAttributes = "";
+
+		// lokasi_nama
+		$this->lokasi_nama->ViewValue = $this->lokasi_nama->CurrentValue;
+		$this->lokasi_nama->ViewCustomAttributes = "";
+
+		// lokasi_id
+		$this->lokasi_id->LinkCustomAttributes = "";
+		$this->lokasi_id->HrefValue = "";
+		$this->lokasi_id->TooltipValue = "";
+
+		// lantai_id
+		$this->lantai_id->LinkCustomAttributes = "";
+		$this->lantai_id->HrefValue = "";
+		$this->lantai_id->TooltipValue = "";
+
+		// lokasi_nama
+		$this->lokasi_nama->LinkCustomAttributes = "";
+		$this->lokasi_nama->HrefValue = "";
+		$this->lokasi_nama->TooltipValue = "";
+
+		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
 
@@ -520,6 +668,24 @@ class caudittrail extends cTable {
 
 		// Call Row Rendering event
 		$this->Row_Rendering();
+
+		// lokasi_id
+		$this->lokasi_id->EditAttrs["class"] = "form-control";
+		$this->lokasi_id->EditCustomAttributes = "";
+		$this->lokasi_id->EditValue = $this->lokasi_id->CurrentValue;
+		$this->lokasi_id->ViewCustomAttributes = "";
+
+		// lantai_id
+		$this->lantai_id->EditAttrs["class"] = "form-control";
+		$this->lantai_id->EditCustomAttributes = "";
+		$this->lantai_id->EditValue = $this->lantai_id->CurrentValue;
+		$this->lantai_id->PlaceHolder = ew_RemoveHtml($this->lantai_id->FldCaption());
+
+		// lokasi_nama
+		$this->lokasi_nama->EditAttrs["class"] = "form-control";
+		$this->lokasi_nama->EditCustomAttributes = "";
+		$this->lokasi_nama->EditValue = $this->lokasi_nama->CurrentValue;
+		$this->lokasi_nama->PlaceHolder = ew_RemoveHtml($this->lokasi_nama->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -548,7 +714,13 @@ class caudittrail extends cTable {
 			if ($Doc->Horizontal) { // Horizontal format, write header
 				$Doc->BeginExportRow();
 				if ($ExportPageType == "view") {
+					if ($this->lokasi_id->Exportable) $Doc->ExportCaption($this->lokasi_id);
+					if ($this->lantai_id->Exportable) $Doc->ExportCaption($this->lantai_id);
+					if ($this->lokasi_nama->Exportable) $Doc->ExportCaption($this->lokasi_nama);
 				} else {
+					if ($this->lokasi_id->Exportable) $Doc->ExportCaption($this->lokasi_id);
+					if ($this->lantai_id->Exportable) $Doc->ExportCaption($this->lantai_id);
+					if ($this->lokasi_nama->Exportable) $Doc->ExportCaption($this->lokasi_nama);
 				}
 				$Doc->EndExportRow();
 			}
@@ -580,7 +752,13 @@ class caudittrail extends cTable {
 				if (!$Doc->ExportCustom) {
 					$Doc->BeginExportRow($RowCnt); // Allow CSS styles if enabled
 					if ($ExportPageType == "view") {
+						if ($this->lokasi_id->Exportable) $Doc->ExportField($this->lokasi_id);
+						if ($this->lantai_id->Exportable) $Doc->ExportField($this->lantai_id);
+						if ($this->lokasi_nama->Exportable) $Doc->ExportField($this->lokasi_nama);
 					} else {
+						if ($this->lokasi_id->Exportable) $Doc->ExportField($this->lokasi_id);
+						if ($this->lantai_id->Exportable) $Doc->ExportField($this->lantai_id);
+						if ($this->lokasi_nama->Exportable) $Doc->ExportField($this->lokasi_nama);
 					}
 					$Doc->EndExportRow();
 				}

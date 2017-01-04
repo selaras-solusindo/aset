@@ -50,7 +50,7 @@ function CurrentLanguageID() {
 function CurrentProjectID() {
 	if (isset($GLOBALS["Page"]))
 		return $GLOBALS["Page"]->ProjectID;
-	return "{d355b560-9db6-4a61-98db-c59c7f5b462a}";
+	return "{32C4CE20-1B57-4C82-8475-08C0302816A6}";
 }
 
 // Get current page object
@@ -4611,6 +4611,22 @@ function Database_Connecting(&$info) {
 	//	$info["pass"] = "";
 	//}
 
+}
+
+function Database_Connecting(&$info) {
+
+	//if (ew_CurrentUserIP() == "127.0.0.1") { // setting koneksi database di komputer localhost
+	if (ew_CurrentUserIP () == "127.0.0.1"  || ew_CurrentUserIP () == ":: 1"  || ew_CurrentHost () == "localhost" ) { // testing on local PC
+		$info["host"] = "localhost";
+		$info["user"] = "root"; // sesuaikan dengan username database di komputer localhost
+		$info["pass"] = "admin"; // sesuaikan dengan password database di komputer localhost
+		$info["db"] = "db_aset"; // sesuaikan dengan nama database di komputer localhost
+	} else { // setting koneksi database untuk komputer server
+		$info["host"] = "mysql.idhostinger.com";  // sesuaikan dengan ip address atau hostname komputer server
+		$info["user"] = "u394242182_aset"; // sesuaikan dengan username database di komputer server
+		$info["pass"] = "PresarioCQ43"; // sesuaikan deengan password database di komputer server
+		$info["db"] = "u394242182_aset"; // sesuaikan dengan nama database di komputer server
+	}
 }
 
 // Database Connected event

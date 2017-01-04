@@ -20,13 +20,13 @@ if (!EW_IS_PHP5) die("This script requires PHP 5.3 or later. You are running " .
 define("EW_PATH_DELIMITER", ((EW_IS_WINDOWS) ? "\\" : "/"), TRUE); // Physical path delimiter
 $EW_ROOT_RELATIVE_PATH = "."; // Relative path of app root
 define("EW_UNFORMAT_YEAR", 50, TRUE); // Unformat year
-define("EW_PROJECT_NAME", "project1", TRUE); // Project name
+define("EW_PROJECT_NAME", "aset", TRUE); // Project name
 define("EW_CONFIG_FILE_FOLDER", EW_PROJECT_NAME, TRUE); // Config file name
-define("EW_PROJECT_ID", "{d355b560-9db6-4a61-98db-c59c7f5b462a}", TRUE); // Project ID (GUID)
+define("EW_PROJECT_ID", "{32C4CE20-1B57-4C82-8475-08C0302816A6}", TRUE); // Project ID (GUID)
 $EW_RELATED_PROJECT_ID = "";
 $EW_RELATED_LANGUAGE_FOLDER = "";
-define("EW_RANDOM_KEY", 'EIilqXeTuHKa4Vs0', TRUE); // Random key for encryption
-define("EW_PROJECT_STYLESHEET_FILENAME", "phpcss/project1.css", TRUE); // Project stylesheet file name
+define("EW_RANDOM_KEY", 'tZLb2viSla8Jsimh', TRUE); // Random key for encryption
+define("EW_PROJECT_STYLESHEET_FILENAME", "phpcss/aset.css", TRUE); // Project stylesheet file name
 define("EW_CHARSET", "", TRUE); // Project charset
 define("EW_EMAIL_CHARSET", EW_CHARSET, TRUE); // Email charset
 define("EW_EMAIL_KEYWORD_SEPARATOR", "", TRUE); // Email keyword separator

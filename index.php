@@ -20,7 +20,7 @@ class cdefault {
 	var $PageID = 'default';
 
 	// Project ID
-	var $ProjectID = "{d355b560-9db6-4a61-98db-c59c7f5b462a}";
+	var $ProjectID = "{32C4CE20-1B57-4C82-8475-08C0302816A6}";
 
 	// Page object name
 	var $PageObjName = 'default';
@@ -259,6 +259,8 @@ class cdefault {
 		if (!$Security->IsLoggedIn()) $Security->AutoLogin();
 		if ($Security->IsLoggedIn())
 		$this->Page_Terminate("tb_lantailist.php"); // Exit and go to default page
+		if ($Security->IsLoggedIn())
+			$this->Page_Terminate("tb_lokasilist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

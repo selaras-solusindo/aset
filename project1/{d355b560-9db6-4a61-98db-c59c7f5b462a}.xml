@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration date="2017/01/04" author="e.World Technology Ltd.">
-  <project id="{d355b560-9db6-4a61-98db-c59c7f5b462a}" file="" name="project1" product="PHPMaker" version="13.0" datetime="2017/01/04 10:08:33" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;">
+  <project id="{d355b560-9db6-4a61-98db-c59c7f5b462a}" file="" name="project1" product="PHPMaker" version="13.0" datetime="2017/01/04 10:11:15" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;">
     <table id="tb_lantai" name="tb_lantai" caption="tb lantai" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
   </project>
 </configuration>
