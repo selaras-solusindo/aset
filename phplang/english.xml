@@ -583,14 +583,17 @@
   <project>
     <phrase id="bodytitle" value="Manajemen Aset" />
     <phrase id="footertext" value="&amp;copy;2016 e.World Technology Ltd. All rights reserved." />
+    <menu id="4">
+      <phrase id="menutext" value="Master" />
+    </menu>
     <menu id="1">
-      <phrase id="menutext" value="tb lantai" />
+      <phrase id="menutext" value="Lantai" />
     </menu>
     <menu id="2">
-      <phrase id="menutext" value="tb lokasi" />
+      <phrase id="menutext" value="Lokasi" />
     </menu>
     <menu id="3">
-      <phrase id="menutext" value="tb device" />
+      <phrase id="menutext" value="Device" />
     </menu>
     <table id="tb_lantai">
       <phrase id="tblcaption" value="tb lantai" />
