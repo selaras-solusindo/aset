@@ -4601,8 +4601,7 @@ function ew_CloseConn() {
 }
 
 // Database Connecting event
-function Database_Connecting(&$info) {
-
+//function Database_Connecting(&$info) {
 	// Example:
 	//var_dump($info);
 	//if ($info["id"] == "DB" && ew_CurrentUserIP() == "127.0.0.1") { // Testing on local PC
@@ -4610,9 +4609,7 @@ function Database_Connecting(&$info) {
 	//	$info["user"] = "root";
 	//	$info["pass"] = "";
 	//}
-
-}
-
+//}
 function Database_Connecting(&$info) {
 
 	//if (ew_CurrentUserIP() == "127.0.0.1") { // setting koneksi database di komputer localhost
