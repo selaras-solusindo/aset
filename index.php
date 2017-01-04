@@ -258,15 +258,15 @@ class cdefault {
 			$this->setFailureMessage($Language->Phrase("SessionExpired"));
 		if (!$Security->IsLoggedIn()) $Security->AutoLogin();
 		if ($Security->IsLoggedIn())
-		$this->Page_Terminate("tb_lantailist.php"); // Exit and go to default page
+		$this->Page_Terminate("home.php"); // Exit and go to default page
+		if ($Security->IsLoggedIn())
+			$this->Page_Terminate("tb_lantailist.php");
 		if ($Security->IsLoggedIn())
 			$this->Page_Terminate("tb_lokasilist.php");
 		if ($Security->IsLoggedIn())
 			$this->Page_Terminate("tb_devicelist.php");
 		if ($Security->IsLoggedIn())
 			$this->Page_Terminate("tb_merklist.php");
-		if ($Security->IsLoggedIn())
-			$this->Page_Terminate("home.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {
