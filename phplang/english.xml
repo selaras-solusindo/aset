@@ -583,6 +583,9 @@
   <project>
     <phrase id="bodytitle" value="Manajemen Aset" />
     <phrase id="footertext" value="&amp;copy;2016 e.World Technology Ltd. All rights reserved." />
+    <menu id="5">
+      <phrase id="menutext" value="Merk" />
+    </menu>
     <menu id="4">
       <phrase id="menutext" value="Master" />
     </menu>
@@ -623,6 +626,15 @@
       </field>
       <field id="device_name">
         <phrase id="fldcaption" value="Nama Device" />
+      </field>
+    </table>
+    <table id="tb_merk">
+      <phrase id="tblcaption" value="Merk" />
+      <field id="merk_id">
+        <phrase id="fldcaption" value="Merk ID" />
+      </field>
+      <field id="merk_nama">
+        <phrase id="fldcaption" value="Merk" />
       </field>
     </table>
   </project>

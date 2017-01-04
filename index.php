@@ -263,6 +263,8 @@ class cdefault {
 			$this->Page_Terminate("tb_lokasilist.php");
 		if ($Security->IsLoggedIn())
 			$this->Page_Terminate("tb_devicelist.php");
+		if ($Security->IsLoggedIn())
+			$this->Page_Terminate("tb_merklist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {
