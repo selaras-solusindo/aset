@@ -615,7 +615,6 @@ class ctb_lantai extends cTable {
 			if ($Doc->Horizontal) { // Horizontal format, write header
 				$Doc->BeginExportRow();
 				if ($ExportPageType == "view") {
-					if ($this->lantai_id->Exportable) $Doc->ExportCaption($this->lantai_id);
 					if ($this->lantai_nama->Exportable) $Doc->ExportCaption($this->lantai_nama);
 				} else {
 					if ($this->lantai_id->Exportable) $Doc->ExportCaption($this->lantai_id);
@@ -651,7 +650,6 @@ class ctb_lantai extends cTable {
 				if (!$Doc->ExportCustom) {
 					$Doc->BeginExportRow($RowCnt); // Allow CSS styles if enabled
 					if ($ExportPageType == "view") {
-						if ($this->lantai_id->Exportable) $Doc->ExportField($this->lantai_id);
 						if ($this->lantai_nama->Exportable) $Doc->ExportField($this->lantai_nama);
 					} else {
 						if ($this->lantai_id->Exportable) $Doc->ExportField($this->lantai_id);

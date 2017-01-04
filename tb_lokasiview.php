@@ -72,6 +72,12 @@ class ctb_lokasi_view extends ctb_lokasi {
 	var $GridEditUrl;
 	var $MultiDeleteUrl;
 	var $MultiUpdateUrl;
+	var $AuditTrailOnAdd = FALSE;
+	var $AuditTrailOnEdit = FALSE;
+	var $AuditTrailOnDelete = FALSE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -654,6 +660,7 @@ class ctb_lokasi_view extends ctb_lokasi {
 		// Call Row Selected event
 		$row = &$rs->fields;
 		$this->Row_Selected($row);
+		if ($this->AuditTrailOnView) $this->WriteAuditTrailOnView($row);
 		$this->lokasi_id->setDbValue($rs->fields('lokasi_id'));
 		$this->lantai_id->setDbValue($rs->fields('lantai_id'));
 		if (array_key_exists('EV__lantai_id', $rs->fields)) {
@@ -1023,6 +1030,13 @@ class ctb_lokasi_view extends ctb_lokasi {
 		$pageId = $pageId ?: $this->PageID;
 		switch ($fld->FldVar) {
 		}
+	}
+
+	// Write Audit Trail start/end for grid update
+	function WriteAuditTrailDummy($typ) {
+		$table = 'tb_lokasi';
+		$usr = CurrentUserName();
+		ew_WriteAuditTrail("log", ew_StdCurrentDateTime(), ew_ScriptName(), $usr, $typ, $table, "", "", "", "");
 	}
 
 	// Page Load event

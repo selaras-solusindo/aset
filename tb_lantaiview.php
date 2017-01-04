@@ -72,6 +72,12 @@ class ctb_lantai_view extends ctb_lantai {
 	var $GridEditUrl;
 	var $MultiDeleteUrl;
 	var $MultiUpdateUrl;
+	var $AuditTrailOnAdd = FALSE;
+	var $AuditTrailOnEdit = FALSE;
+	var $AuditTrailOnDelete = FALSE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -365,8 +371,6 @@ class ctb_lantai_view extends ctb_lantai {
 
 		// Setup export options
 		$this->SetupExportOptions();
-		$this->lantai_id->SetVisibility();
-		$this->lantai_id->Visible = !$this->IsAdd() && !$this->IsCopy() && !$this->IsGridAdd();
 		$this->lantai_nama->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
@@ -653,6 +657,7 @@ class ctb_lantai_view extends ctb_lantai {
 		// Call Row Selected event
 		$row = &$rs->fields;
 		$this->Row_Selected($row);
+		if ($this->AuditTrailOnView) $this->WriteAuditTrailOnView($row);
 		$this->lantai_id->setDbValue($rs->fields('lantai_id'));
 		$this->lantai_nama->setDbValue($rs->fields('lantai_nama'));
 	}
@@ -693,11 +698,6 @@ class ctb_lantai_view extends ctb_lantai {
 		// lantai_nama
 		$this->lantai_nama->ViewValue = $this->lantai_nama->CurrentValue;
 		$this->lantai_nama->ViewCustomAttributes = "";
-
-			// lantai_id
-			$this->lantai_id->LinkCustomAttributes = "";
-			$this->lantai_id->HrefValue = "";
-			$this->lantai_id->TooltipValue = "";
 
 			// lantai_nama
 			$this->lantai_nama->LinkCustomAttributes = "";
@@ -983,6 +983,13 @@ class ctb_lantai_view extends ctb_lantai {
 		}
 	}
 
+	// Write Audit Trail start/end for grid update
+	function WriteAuditTrailDummy($typ) {
+		$table = 'tb_lantai';
+		$usr = CurrentUserName();
+		ew_WriteAuditTrail("log", ew_StdCurrentDateTime(), ew_ScriptName(), $usr, $typ, $table, "", "", "", "");
+	}
+
 	// Page Load event
 	function Page_Load() {
 
@@ -1153,17 +1160,6 @@ $tb_lantai_view->ShowMessage();
 <input type="hidden" name="modal" value="1">
 <?php } ?>
 <table class="table table-bordered table-striped ewViewTable">
-<?php if ($tb_lantai->lantai_id->Visible) { // lantai_id ?>
-	<tr id="r_lantai_id">
-		<td><span id="elh_tb_lantai_lantai_id"><?php echo $tb_lantai->lantai_id->FldCaption() ?></span></td>
-		<td data-name="lantai_id"<?php echo $tb_lantai->lantai_id->CellAttributes() ?>>
-<span id="el_tb_lantai_lantai_id">
-<span<?php echo $tb_lantai->lantai_id->ViewAttributes() ?>>
-<?php echo $tb_lantai->lantai_id->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
 <?php if ($tb_lantai->lantai_nama->Visible) { // lantai_nama ?>
 	<tr id="r_lantai_nama">
 		<td><span id="elh_tb_lantai_lantai_nama"><?php echo $tb_lantai->lantai_nama->FldCaption() ?></span></td>

@@ -80,6 +80,12 @@ class ctb_device_list extends ctb_device {
 	var $GridEditUrl;
 	var $MultiDeleteUrl;
 	var $MultiUpdateUrl;
+	var $AuditTrailOnAdd = FALSE;
+	var $AuditTrailOnEdit = FALSE;
+	var $AuditTrailOnDelete = FALSE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -1044,6 +1050,14 @@ class ctb_device_list extends ctb_device {
 		$item->ShowInDropDown = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 
+		// "sequence"
+		$item = &$this->ListOptions->Add("sequence");
+		$item->CssStyle = "white-space: nowrap;";
+		$item->Visible = TRUE;
+		$item->OnLeft = TRUE; // Always on left
+		$item->ShowInDropDown = FALSE;
+		$item->ShowInButtonGroup = FALSE;
+
 		// Drop down button for ListOptions
 		$this->ListOptions->UseImageAndText = TRUE;
 		$this->ListOptions->UseDropDownButton = FALSE;
@@ -1064,6 +1078,10 @@ class ctb_device_list extends ctb_device {
 	function RenderListOptions() {
 		global $Security, $Language, $objForm;
 		$this->ListOptions->LoadDefault();
+
+		// "sequence"
+		$oListOpt = &$this->ListOptions->Items["sequence"];
+		$oListOpt->Body = ew_FormatSeqNo($this->RecCnt);
 
 		// "view"
 		$oListOpt = &$this->ListOptions->Items["view"];
@@ -1806,6 +1824,13 @@ class ctb_device_list extends ctb_device {
 		}
 	}
 
+	// Write Audit Trail start/end for grid update
+	function WriteAuditTrailDummy($typ) {
+		$table = 'tb_device';
+		$usr = CurrentUserName();
+		ew_WriteAuditTrail("log", ew_StdCurrentDateTime(), ew_ScriptName(), $usr, $typ, $table, "", "", "", "");
+	}
+
 	// Page Load event
 	function Page_Load() {
 
@@ -2021,6 +2046,13 @@ var CurrentSearchForm = ftb_devicelistsrch = new ew_Form("ftb_devicelistsrch");
 			$tb_device_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
 			$tb_device_list->setWarningMessage($Language->Phrase("NoRecord"));
+	}
+
+	// Audit trail on search
+	if ($tb_device_list->AuditTrailOnSearch && $tb_device_list->Command == "search" && !$tb_device_list->RestoreSearch) {
+		$searchparm = ew_ServerVar("QUERY_STRING");
+		$searchsql = $tb_device_list->getSessionWhere();
+		$tb_device_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
 	}
 $tb_device_list->RenderOtherOptions();
 ?>

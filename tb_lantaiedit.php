@@ -40,6 +40,12 @@ class ctb_lantai_edit extends ctb_lantai {
 		if ($this->UseTokenInUrl) $PageUrl .= "t=" . $this->TableVar . "&"; // Add page token
 		return $PageUrl;
 	}
+	var $AuditTrailOnAdd = FALSE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = FALSE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -267,8 +273,6 @@ class ctb_lantai_edit extends ctb_lantai {
 		// Create form object
 		$objForm = new cFormObj();
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
-		$this->lantai_id->SetVisibility();
-		$this->lantai_id->Visible = !$this->IsAdd() && !$this->IsCopy() && !$this->IsGridAdd();
 		$this->lantai_nama->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
@@ -477,11 +481,11 @@ class ctb_lantai_edit extends ctb_lantai {
 
 		// Load from form
 		global $objForm;
-		if (!$this->lantai_id->FldIsDetailKey)
-			$this->lantai_id->setFormValue($objForm->GetValue("x_lantai_id"));
 		if (!$this->lantai_nama->FldIsDetailKey) {
 			$this->lantai_nama->setFormValue($objForm->GetValue("x_lantai_nama"));
 		}
+		if (!$this->lantai_id->FldIsDetailKey)
+			$this->lantai_id->setFormValue($objForm->GetValue("x_lantai_id"));
 	}
 
 	// Restore form values
@@ -556,22 +560,11 @@ class ctb_lantai_edit extends ctb_lantai {
 		$this->lantai_nama->ViewValue = $this->lantai_nama->CurrentValue;
 		$this->lantai_nama->ViewCustomAttributes = "";
 
-			// lantai_id
-			$this->lantai_id->LinkCustomAttributes = "";
-			$this->lantai_id->HrefValue = "";
-			$this->lantai_id->TooltipValue = "";
-
 			// lantai_nama
 			$this->lantai_nama->LinkCustomAttributes = "";
 			$this->lantai_nama->HrefValue = "";
 			$this->lantai_nama->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_EDIT) { // Edit row
-
-			// lantai_id
-			$this->lantai_id->EditAttrs["class"] = "form-control";
-			$this->lantai_id->EditCustomAttributes = "";
-			$this->lantai_id->EditValue = $this->lantai_id->CurrentValue;
-			$this->lantai_id->ViewCustomAttributes = "";
 
 			// lantai_nama
 			$this->lantai_nama->EditAttrs["class"] = "form-control";
@@ -580,12 +573,8 @@ class ctb_lantai_edit extends ctb_lantai {
 			$this->lantai_nama->PlaceHolder = ew_RemoveHtml($this->lantai_nama->FldCaption());
 
 			// Edit refer script
-			// lantai_id
-
-			$this->lantai_id->LinkCustomAttributes = "";
-			$this->lantai_id->HrefValue = "";
-
 			// lantai_nama
+
 			$this->lantai_nama->LinkCustomAttributes = "";
 			$this->lantai_nama->HrefValue = "";
 		}
@@ -680,6 +669,9 @@ class ctb_lantai_edit extends ctb_lantai {
 		// Call Row_Updated event
 		if ($EditRow)
 			$this->Row_Updated($rsold, $rsnew);
+		if ($EditRow) {
+			$this->WriteAuditTrailOnEdit($rsold, $rsnew);
+		}
 		$rs->Close();
 		return $EditRow;
 	}
@@ -707,6 +699,60 @@ class ctb_lantai_edit extends ctb_lantai {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
 		switch ($fld->FldVar) {
+		}
+	}
+
+	// Write Audit Trail start/end for grid update
+	function WriteAuditTrailDummy($typ) {
+		$table = 'tb_lantai';
+		$usr = CurrentUserName();
+		ew_WriteAuditTrail("log", ew_StdCurrentDateTime(), ew_ScriptName(), $usr, $typ, $table, "", "", "", "");
+	}
+
+	// Write Audit Trail (edit page)
+	function WriteAuditTrailOnEdit(&$rsold, &$rsnew) {
+		global $Language;
+		if (!$this->AuditTrailOnEdit) return;
+		$table = 'tb_lantai';
+
+		// Get key value
+		$key = "";
+		if ($key <> "") $key .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rsold['lantai_id'];
+
+		// Write Audit Trail
+		$dt = ew_StdCurrentDateTime();
+		$id = ew_ScriptName();
+		$usr = CurrentUserName();
+		foreach (array_keys($rsnew) as $fldname) {
+			if ($this->fields[$fldname]->FldDataType <> EW_DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->FldDataType == EW_DATATYPE_DATE) { // DateTime field
+					$modified = (ew_FormatDateTime($rsold[$fldname], 0) <> ew_FormatDateTime($rsnew[$fldname], 0));
+				} else {
+					$modified = !ew_CompareValue($rsold[$fldname], $rsnew[$fldname]);
+				}
+				if ($modified) {
+					if ($this->fields[$fldname]->FldHtmlTag == "PASSWORD") { // Password Field
+						$oldvalue = $Language->Phrase("PasswordMask");
+						$newvalue = $Language->Phrase("PasswordMask");
+					} elseif ($this->fields[$fldname]->FldDataType == EW_DATATYPE_MEMO) { // Memo field
+						if (EW_AUDIT_TRAIL_TO_DATABASE) {
+							$oldvalue = $rsold[$fldname];
+							$newvalue = $rsnew[$fldname];
+						} else {
+							$oldvalue = "[MEMO]";
+							$newvalue = "[MEMO]";
+						}
+					} elseif ($this->fields[$fldname]->FldDataType == EW_DATATYPE_XML) { // XML field
+						$oldvalue = "[XML]";
+						$newvalue = "[XML]";
+					} else {
+						$oldvalue = $rsold[$fldname];
+						$newvalue = $rsnew[$fldname];
+					}
+					ew_WriteAuditTrail("log", $dt, $id, $usr, "U", $table, $fldname, $key, $oldvalue, $newvalue);
+				}
+			}
 		}
 	}
 
@@ -882,18 +928,6 @@ $tb_lantai_edit->ShowMessage();
 <input type="hidden" name="modal" value="1">
 <?php } ?>
 <div>
-<?php if ($tb_lantai->lantai_id->Visible) { // lantai_id ?>
-	<div id="r_lantai_id" class="form-group">
-		<label id="elh_tb_lantai_lantai_id" class="col-sm-2 control-label ewLabel"><?php echo $tb_lantai->lantai_id->FldCaption() ?></label>
-		<div class="col-sm-10"><div<?php echo $tb_lantai->lantai_id->CellAttributes() ?>>
-<span id="el_tb_lantai_lantai_id">
-<span<?php echo $tb_lantai->lantai_id->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $tb_lantai->lantai_id->EditValue ?></p></span>
-</span>
-<input type="hidden" data-table="tb_lantai" data-field="x_lantai_id" name="x_lantai_id" id="x_lantai_id" value="<?php echo ew_HtmlEncode($tb_lantai->lantai_id->CurrentValue) ?>">
-<?php echo $tb_lantai->lantai_id->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
 <?php if ($tb_lantai->lantai_nama->Visible) { // lantai_nama ?>
 	<div id="r_lantai_nama" class="form-group">
 		<label id="elh_tb_lantai_lantai_nama" for="x_lantai_nama" class="col-sm-2 control-label ewLabel"><?php echo $tb_lantai->lantai_nama->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
@@ -905,6 +939,7 @@ $tb_lantai_edit->ShowMessage();
 	</div>
 <?php } ?>
 </div>
+<input type="hidden" data-table="tb_lantai" data-field="x_lantai_id" name="x_lantai_id" id="x_lantai_id" value="<?php echo ew_HtmlEncode($tb_lantai->lantai_id->CurrentValue) ?>">
 <?php if (!$tb_lantai_edit->IsModal) { ?>
 <div class="form-group">
 	<div class="col-sm-offset-2 col-sm-10">
