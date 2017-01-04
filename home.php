@@ -302,7 +302,7 @@ Page_Rendering();
 		</title>
 	</head>
 	<body>
-Copyright 2016. ABCH.
+Copyright &copy; 2016. ABCH.
 	</body>
 </html>
 <?php if (EW_DEBUG_ENABLED) echo ew_DebugMsg(); ?>

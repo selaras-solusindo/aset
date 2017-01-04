@@ -53,7 +53,7 @@ function Database_Connecting(&$info) {
 		</title>
 	</head>
 	<body>
-Copyright 2016. ABCH.
+Copyright &copy; 2016. ABCH.
 	</body>
 </html>
 ]]></CustomScript>
