@@ -601,6 +601,9 @@
     <menu id="5">
       <phrase id="menutext" value="Merk" />
     </menu>
+    <menu id="7">
+      <phrase id="menutext" value="Assembling" />
+    </menu>
     <table id="tb_lantai">
       <phrase id="tblcaption" value="Lantai" />
       <field id="lantai_id">
@@ -642,6 +645,24 @@
     </table>
     <table id="home_php">
       <phrase id="tblcaption" value="Home" />
+    </table>
+    <table id="tb_assembly">
+      <phrase id="tblcaption" value="Assembling" />
+      <field id="assembly_id">
+        <phrase id="fldcaption" value="Assembly ID" />
+      </field>
+      <field id="merk_id">
+        <phrase id="fldcaption" value="Merk" />
+      </field>
+      <field id="device_id">
+        <phrase id="fldcaption" value="Device" />
+      </field>
+      <field id="unit_name">
+        <phrase id="fldcaption" value="Unit Name" />
+      </field>
+      <field id="keterangan">
+        <phrase id="fldcaption" value="Keterangan" />
+      </field>
     </table>
   </project>
 </ew-language>
