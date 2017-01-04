@@ -53,7 +53,7 @@ function Database_Connecting(&$info) {
 		</title>
 	</head>
 	<body>
-Manajemen Aset
+Copyright 2016. ABCH.
 	</body>
 </html>
 ]]></CustomScript>

@@ -302,7 +302,7 @@ Page_Rendering();
 		</title>
 	</head>
 	<body>
-Manajemen Aset
+Copyright 2016. ABCH.
 	</body>
 </html>
 <?php if (EW_DEBUG_ENABLED) echo ew_DebugMsg(); ?>
