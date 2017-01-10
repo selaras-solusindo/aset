@@ -269,6 +269,8 @@ class cdefault {
 			$this->Page_Terminate("tb_merklist.php");
 		if ($Security->IsLoggedIn())
 			$this->Page_Terminate("tb_assemblylist.php");
+		if ($Security->IsLoggedIn())
+			$this->Page_Terminate("tb_departemenlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

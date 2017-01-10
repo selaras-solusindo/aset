@@ -1,14 +1,14 @@
 <?php
 
 // Global variable for table object
-$tb_lantai = NULL;
+$tb_departemen = NULL;
 
 //
-// Table class for tb_lantai
+// Table class for tb_departemen
 //
-class ctb_lantai extends cTable {
-	var $lantai_id;
-	var $lantai_nama;
+class ctb_departemen extends cTable {
+	var $departemen_id;
+	var $departemen_nama;
 
 	//
 	// Table class constructor
@@ -18,12 +18,12 @@ class ctb_lantai extends cTable {
 
 		// Language object
 		if (!isset($Language)) $Language = new cLanguage();
-		$this->TableVar = 'tb_lantai';
-		$this->TableName = 'tb_lantai';
+		$this->TableVar = 'tb_departemen';
+		$this->TableName = 'tb_departemen';
 		$this->TableType = 'TABLE';
 
 		// Update Table
-		$this->UpdateTable = "`tb_lantai`";
+		$this->UpdateTable = "`tb_departemen`";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -40,16 +40,16 @@ class ctb_lantai extends cTable {
 		$this->UserIDAllowSecurity = 0; // User ID Allow
 		$this->BasicSearch = new cBasicSearch($this->TableVar);
 
-		// lantai_id
-		$this->lantai_id = new cField('tb_lantai', 'tb_lantai', 'x_lantai_id', 'lantai_id', '`lantai_id`', '`lantai_id`', 2, -1, FALSE, '`lantai_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
-		$this->lantai_id->Sortable = TRUE; // Allow sort
-		$this->lantai_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
-		$this->fields['lantai_id'] = &$this->lantai_id;
+		// departemen_id
+		$this->departemen_id = new cField('tb_departemen', 'tb_departemen', 'x_departemen_id', 'departemen_id', '`departemen_id`', '`departemen_id`', 2, -1, FALSE, '`departemen_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->departemen_id->Sortable = TRUE; // Allow sort
+		$this->departemen_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['departemen_id'] = &$this->departemen_id;
 
-		// lantai_nama
-		$this->lantai_nama = new cField('tb_lantai', 'tb_lantai', 'x_lantai_nama', 'lantai_nama', '`lantai_nama`', '`lantai_nama`', 200, -1, FALSE, '`lantai_nama`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->lantai_nama->Sortable = TRUE; // Allow sort
-		$this->fields['lantai_nama'] = &$this->lantai_nama;
+		// departemen_nama
+		$this->departemen_nama = new cField('tb_departemen', 'tb_departemen', 'x_departemen_nama', 'departemen_nama', '`departemen_nama`', '`departemen_nama`', 200, -1, FALSE, '`departemen_nama`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->departemen_nama->Sortable = TRUE; // Allow sort
+		$this->fields['departemen_nama'] = &$this->departemen_nama;
 	}
 
 	// Set Field Visibility
@@ -79,7 +79,7 @@ class ctb_lantai extends cTable {
 	var $_SqlFrom = "";
 
 	function getSqlFrom() { // From
-		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`tb_lantai`";
+		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`tb_departemen`";
 	}
 
 	function SqlFrom() { // For backward compatibility
@@ -332,8 +332,8 @@ class ctb_lantai extends cTable {
 		if (is_array($where))
 			$where = $this->ArrayToFilter($where);
 		if ($rs) {
-			if (array_key_exists('lantai_id', $rs))
-				ew_AddFilter($where, ew_QuotedName('lantai_id', $this->DBID) . '=' . ew_QuotedValue($rs['lantai_id'], $this->lantai_id->FldDataType, $this->DBID));
+			if (array_key_exists('departemen_id', $rs))
+				ew_AddFilter($where, ew_QuotedName('departemen_id', $this->DBID) . '=' . ew_QuotedValue($rs['departemen_id'], $this->departemen_id->FldDataType, $this->DBID));
 		}
 		$filter = ($curfilter) ? $this->CurrentFilter : "";
 		ew_AddFilter($filter, $where);
@@ -352,15 +352,15 @@ class ctb_lantai extends cTable {
 
 	// Key filter WHERE clause
 	function SqlKeyFilter() {
-		return "`lantai_id` = @lantai_id@";
+		return "`departemen_id` = @departemen_id@";
 	}
 
 	// Key filter
 	function KeyFilter() {
 		$sKeyFilter = $this->SqlKeyFilter();
-		if (!is_numeric($this->lantai_id->CurrentValue))
+		if (!is_numeric($this->departemen_id->CurrentValue))
 			$sKeyFilter = "0=1"; // Invalid key
-		$sKeyFilter = str_replace("@lantai_id@", ew_AdjustSql($this->lantai_id->CurrentValue, $this->DBID), $sKeyFilter); // Replace key value
+		$sKeyFilter = str_replace("@departemen_id@", ew_AdjustSql($this->departemen_id->CurrentValue, $this->DBID), $sKeyFilter); // Replace key value
 		return $sKeyFilter;
 	}
 
@@ -374,7 +374,7 @@ class ctb_lantai extends cTable {
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "tb_lantailist.php";
+			return "tb_departemenlist.php";
 		}
 	}
 
@@ -384,30 +384,30 @@ class ctb_lantai extends cTable {
 
 	// List URL
 	function GetListUrl() {
-		return "tb_lantailist.php";
+		return "tb_departemenlist.php";
 	}
 
 	// View URL
 	function GetViewUrl($parm = "") {
 		if ($parm <> "")
-			$url = $this->KeyUrl("tb_lantaiview.php", $this->UrlParm($parm));
+			$url = $this->KeyUrl("tb_departemenview.php", $this->UrlParm($parm));
 		else
-			$url = $this->KeyUrl("tb_lantaiview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
+			$url = $this->KeyUrl("tb_departemenview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
 		return $this->AddMasterUrl($url);
 	}
 
 	// Add URL
 	function GetAddUrl($parm = "") {
 		if ($parm <> "")
-			$url = "tb_lantaiadd.php?" . $this->UrlParm($parm);
+			$url = "tb_departemenadd.php?" . $this->UrlParm($parm);
 		else
-			$url = "tb_lantaiadd.php";
+			$url = "tb_departemenadd.php";
 		return $this->AddMasterUrl($url);
 	}
 
 	// Edit URL
 	function GetEditUrl($parm = "") {
-		$url = $this->KeyUrl("tb_lantaiedit.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("tb_departemenedit.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -419,7 +419,7 @@ class ctb_lantai extends cTable {
 
 	// Copy URL
 	function GetCopyUrl($parm = "") {
-		$url = $this->KeyUrl("tb_lantaiadd.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("tb_departemenadd.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -431,7 +431,7 @@ class ctb_lantai extends cTable {
 
 	// Delete URL
 	function GetDeleteUrl() {
-		return $this->KeyUrl("tb_lantaidelete.php", $this->UrlParm());
+		return $this->KeyUrl("tb_departemendelete.php", $this->UrlParm());
 	}
 
 	// Add master url
@@ -441,7 +441,7 @@ class ctb_lantai extends cTable {
 
 	function KeyToJson() {
 		$json = "";
-		$json .= "lantai_id:" . ew_VarToJson($this->lantai_id->CurrentValue, "number", "'");
+		$json .= "departemen_id:" . ew_VarToJson($this->departemen_id->CurrentValue, "number", "'");
 		return "{" . $json . "}";
 	}
 
@@ -449,8 +449,8 @@ class ctb_lantai extends cTable {
 	function KeyUrl($url, $parm = "") {
 		$sUrl = $url . "?";
 		if ($parm <> "") $sUrl .= $parm . "&";
-		if (!is_null($this->lantai_id->CurrentValue)) {
-			$sUrl .= "lantai_id=" . urlencode($this->lantai_id->CurrentValue);
+		if (!is_null($this->departemen_id->CurrentValue)) {
+			$sUrl .= "departemen_id=" . urlencode($this->departemen_id->CurrentValue);
 		} else {
 			return "javascript:ew_Alert(ewLanguage.Phrase('InvalidRecord'));";
 		}
@@ -483,10 +483,10 @@ class ctb_lantai extends cTable {
 			$cnt = count($arKeys);
 		} elseif (!empty($_GET) || !empty($_POST)) {
 			$isPost = ew_IsHttpPost();
-			if ($isPost && isset($_POST["lantai_id"]))
-				$arKeys[] = ew_StripSlashes($_POST["lantai_id"]);
-			elseif (isset($_GET["lantai_id"]))
-				$arKeys[] = ew_StripSlashes($_GET["lantai_id"]);
+			if ($isPost && isset($_POST["departemen_id"]))
+				$arKeys[] = ew_StripSlashes($_POST["departemen_id"]);
+			elseif (isset($_GET["departemen_id"]))
+				$arKeys[] = ew_StripSlashes($_GET["departemen_id"]);
 			else
 				$arKeys = NULL; // Do not setup
 
@@ -511,7 +511,7 @@ class ctb_lantai extends cTable {
 		$sKeyFilter = "";
 		foreach ($arKeys as $key) {
 			if ($sKeyFilter <> "") $sKeyFilter .= " OR ";
-			$this->lantai_id->CurrentValue = $key;
+			$this->departemen_id->CurrentValue = $key;
 			$sKeyFilter .= "(" . $this->KeyFilter() . ")";
 		}
 		return $sKeyFilter;
@@ -532,8 +532,8 @@ class ctb_lantai extends cTable {
 
 	// Load row values from recordset
 	function LoadListRowValues(&$rs) {
-		$this->lantai_id->setDbValue($rs->fields('lantai_id'));
-		$this->lantai_nama->setDbValue($rs->fields('lantai_nama'));
+		$this->departemen_id->setDbValue($rs->fields('departemen_id'));
+		$this->departemen_nama->setDbValue($rs->fields('departemen_nama'));
 	}
 
 	// Render list row values
@@ -544,26 +544,26 @@ class ctb_lantai extends cTable {
 		$this->Row_Rendering();
 
    // Common render codes
-		// lantai_id
-		// lantai_nama
-		// lantai_id
+		// departemen_id
+		// departemen_nama
+		// departemen_id
 
-		$this->lantai_id->ViewValue = $this->lantai_id->CurrentValue;
-		$this->lantai_id->ViewCustomAttributes = "";
+		$this->departemen_id->ViewValue = $this->departemen_id->CurrentValue;
+		$this->departemen_id->ViewCustomAttributes = "";
 
-		// lantai_nama
-		$this->lantai_nama->ViewValue = $this->lantai_nama->CurrentValue;
-		$this->lantai_nama->ViewCustomAttributes = "";
+		// departemen_nama
+		$this->departemen_nama->ViewValue = $this->departemen_nama->CurrentValue;
+		$this->departemen_nama->ViewCustomAttributes = "";
 
-		// lantai_id
-		$this->lantai_id->LinkCustomAttributes = "";
-		$this->lantai_id->HrefValue = "";
-		$this->lantai_id->TooltipValue = "";
+		// departemen_id
+		$this->departemen_id->LinkCustomAttributes = "";
+		$this->departemen_id->HrefValue = "";
+		$this->departemen_id->TooltipValue = "";
 
-		// lantai_nama
-		$this->lantai_nama->LinkCustomAttributes = "";
-		$this->lantai_nama->HrefValue = "";
-		$this->lantai_nama->TooltipValue = "";
+		// departemen_nama
+		$this->departemen_nama->LinkCustomAttributes = "";
+		$this->departemen_nama->HrefValue = "";
+		$this->departemen_nama->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -576,17 +576,17 @@ class ctb_lantai extends cTable {
 		// Call Row Rendering event
 		$this->Row_Rendering();
 
-		// lantai_id
-		$this->lantai_id->EditAttrs["class"] = "form-control";
-		$this->lantai_id->EditCustomAttributes = "";
-		$this->lantai_id->EditValue = $this->lantai_id->CurrentValue;
-		$this->lantai_id->ViewCustomAttributes = "";
+		// departemen_id
+		$this->departemen_id->EditAttrs["class"] = "form-control";
+		$this->departemen_id->EditCustomAttributes = "";
+		$this->departemen_id->EditValue = $this->departemen_id->CurrentValue;
+		$this->departemen_id->ViewCustomAttributes = "";
 
-		// lantai_nama
-		$this->lantai_nama->EditAttrs["class"] = "form-control";
-		$this->lantai_nama->EditCustomAttributes = "";
-		$this->lantai_nama->EditValue = $this->lantai_nama->CurrentValue;
-		$this->lantai_nama->PlaceHolder = ew_RemoveHtml($this->lantai_nama->FldCaption());
+		// departemen_nama
+		$this->departemen_nama->EditAttrs["class"] = "form-control";
+		$this->departemen_nama->EditCustomAttributes = "";
+		$this->departemen_nama->EditValue = $this->departemen_nama->CurrentValue;
+		$this->departemen_nama->PlaceHolder = ew_RemoveHtml($this->departemen_nama->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -615,10 +615,11 @@ class ctb_lantai extends cTable {
 			if ($Doc->Horizontal) { // Horizontal format, write header
 				$Doc->BeginExportRow();
 				if ($ExportPageType == "view") {
-					if ($this->lantai_nama->Exportable) $Doc->ExportCaption($this->lantai_nama);
+					if ($this->departemen_id->Exportable) $Doc->ExportCaption($this->departemen_id);
+					if ($this->departemen_nama->Exportable) $Doc->ExportCaption($this->departemen_nama);
 				} else {
-					if ($this->lantai_id->Exportable) $Doc->ExportCaption($this->lantai_id);
-					if ($this->lantai_nama->Exportable) $Doc->ExportCaption($this->lantai_nama);
+					if ($this->departemen_id->Exportable) $Doc->ExportCaption($this->departemen_id);
+					if ($this->departemen_nama->Exportable) $Doc->ExportCaption($this->departemen_nama);
 				}
 				$Doc->EndExportRow();
 			}
@@ -650,10 +651,11 @@ class ctb_lantai extends cTable {
 				if (!$Doc->ExportCustom) {
 					$Doc->BeginExportRow($RowCnt); // Allow CSS styles if enabled
 					if ($ExportPageType == "view") {
-						if ($this->lantai_nama->Exportable) $Doc->ExportField($this->lantai_nama);
+						if ($this->departemen_id->Exportable) $Doc->ExportField($this->departemen_id);
+						if ($this->departemen_nama->Exportable) $Doc->ExportField($this->departemen_nama);
 					} else {
-						if ($this->lantai_id->Exportable) $Doc->ExportField($this->lantai_id);
-						if ($this->lantai_nama->Exportable) $Doc->ExportField($this->lantai_nama);
+						if ($this->departemen_id->Exportable) $Doc->ExportField($this->departemen_id);
+						if ($this->departemen_nama->Exportable) $Doc->ExportField($this->departemen_nama);
 					}
 					$Doc->EndExportRow();
 				}

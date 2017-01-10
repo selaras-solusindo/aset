@@ -48,7 +48,7 @@ class ctb_lokasi extends cTable {
 		$this->fields['lokasi_id'] = &$this->lokasi_id;
 
 		// lantai_id
-		$this->lantai_id = new cField('tb_lokasi', 'tb_lokasi', 'x_lantai_id', 'lantai_id', '`lantai_id`', '`lantai_id`', 16, -1, FALSE, '`EV__lantai_id`', TRUE, TRUE, TRUE, 'FORMATTED TEXT', 'TEXT');
+		$this->lantai_id = new cField('tb_lokasi', 'tb_lokasi', 'x_lantai_id', 'lantai_id', '`lantai_id`', '`lantai_id`', 2, -1, FALSE, '`EV__lantai_id`', TRUE, TRUE, TRUE, 'FORMATTED TEXT', 'TEXT');
 		$this->lantai_id->Sortable = TRUE; // Allow sort
 		$this->lantai_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['lantai_id'] = &$this->lantai_id;
