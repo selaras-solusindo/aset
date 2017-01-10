@@ -273,6 +273,7 @@ class ctb_departemen_delete extends ctb_departemen {
 		$this->departemen_id->SetVisibility();
 		$this->departemen_id->Visible = !$this->IsAdd() && !$this->IsCopy() && !$this->IsGridAdd();
 		$this->departemen_nama->SetVisibility();
+		$this->departemen_kode->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -449,6 +450,7 @@ class ctb_departemen_delete extends ctb_departemen {
 		$this->Row_Selected($row);
 		$this->departemen_id->setDbValue($rs->fields('departemen_id'));
 		$this->departemen_nama->setDbValue($rs->fields('departemen_nama'));
+		$this->departemen_kode->setDbValue($rs->fields('departemen_kode'));
 	}
 
 	// Load DbValue from recordset
@@ -457,6 +459,7 @@ class ctb_departemen_delete extends ctb_departemen {
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->departemen_id->DbValue = $row['departemen_id'];
 		$this->departemen_nama->DbValue = $row['departemen_nama'];
+		$this->departemen_kode->DbValue = $row['departemen_kode'];
 	}
 
 	// Render row values based on field settings
@@ -471,6 +474,7 @@ class ctb_departemen_delete extends ctb_departemen {
 		// Common render codes for all row types
 		// departemen_id
 		// departemen_nama
+		// departemen_kode
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -482,6 +486,10 @@ class ctb_departemen_delete extends ctb_departemen {
 		$this->departemen_nama->ViewValue = $this->departemen_nama->CurrentValue;
 		$this->departemen_nama->ViewCustomAttributes = "";
 
+		// departemen_kode
+		$this->departemen_kode->ViewValue = $this->departemen_kode->CurrentValue;
+		$this->departemen_kode->ViewCustomAttributes = "";
+
 			// departemen_id
 			$this->departemen_id->LinkCustomAttributes = "";
 			$this->departemen_id->HrefValue = "";
@@ -491,6 +499,11 @@ class ctb_departemen_delete extends ctb_departemen {
 			$this->departemen_nama->LinkCustomAttributes = "";
 			$this->departemen_nama->HrefValue = "";
 			$this->departemen_nama->TooltipValue = "";
+
+			// departemen_kode
+			$this->departemen_kode->LinkCustomAttributes = "";
+			$this->departemen_kode->HrefValue = "";
+			$this->departemen_kode->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -792,6 +805,9 @@ $tb_departemen_delete->ShowMessage();
 <?php if ($tb_departemen->departemen_nama->Visible) { // departemen_nama ?>
 		<th><span id="elh_tb_departemen_departemen_nama" class="tb_departemen_departemen_nama"><?php echo $tb_departemen->departemen_nama->FldCaption() ?></span></th>
 <?php } ?>
+<?php if ($tb_departemen->departemen_kode->Visible) { // departemen_kode ?>
+		<th><span id="elh_tb_departemen_departemen_kode" class="tb_departemen_departemen_kode"><?php echo $tb_departemen->departemen_kode->FldCaption() ?></span></th>
+<?php } ?>
 	</tr>
 	</thead>
 	<tbody>
@@ -826,6 +842,14 @@ while (!$tb_departemen_delete->Recordset->EOF) {
 <span id="el<?php echo $tb_departemen_delete->RowCnt ?>_tb_departemen_departemen_nama" class="tb_departemen_departemen_nama">
 <span<?php echo $tb_departemen->departemen_nama->ViewAttributes() ?>>
 <?php echo $tb_departemen->departemen_nama->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($tb_departemen->departemen_kode->Visible) { // departemen_kode ?>
+		<td<?php echo $tb_departemen->departemen_kode->CellAttributes() ?>>
+<span id="el<?php echo $tb_departemen_delete->RowCnt ?>_tb_departemen_departemen_kode" class="tb_departemen_departemen_kode">
+<span<?php echo $tb_departemen->departemen_kode->ViewAttributes() ?>>
+<?php echo $tb_departemen->departemen_kode->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

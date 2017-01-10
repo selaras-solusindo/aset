@@ -610,7 +610,7 @@
     <table id="tb_lantai">
       <phrase id="tblcaption" value="Lantai" />
       <field id="lantai_id">
-        <phrase id="fldcaption" value="Lantai ID" />
+        <phrase id="fldcaption" value="ID" />
       </field>
       <field id="lantai_nama">
         <phrase id="fldcaption" value="Lantai" />
@@ -619,7 +619,7 @@
     <table id="tb_lokasi">
       <phrase id="tblcaption" value="Lokasi" />
       <field id="lokasi_id">
-        <phrase id="fldcaption" value="Lokasi ID" />
+        <phrase id="fldcaption" value="ID" />
       </field>
       <field id="lantai_id">
         <phrase id="fldcaption" value="Lantai" />
@@ -631,16 +631,16 @@
     <table id="tb_device">
       <phrase id="tblcaption" value="Device" />
       <field id="device_id">
-        <phrase id="fldcaption" value="Device ID" />
+        <phrase id="fldcaption" value="ID" />
       </field>
       <field id="device_name">
-        <phrase id="fldcaption" value="Nama Device" />
+        <phrase id="fldcaption" value="Nama" />
       </field>
     </table>
     <table id="tb_merk">
       <phrase id="tblcaption" value="Merk" />
       <field id="merk_id">
-        <phrase id="fldcaption" value="Merk ID" />
+        <phrase id="fldcaption" value="ID" />
       </field>
       <field id="merk_nama">
         <phrase id="fldcaption" value="Merk" />
@@ -652,7 +652,7 @@
     <table id="tb_assembly">
       <phrase id="tblcaption" value="Assembling" />
       <field id="assembly_id">
-        <phrase id="fldcaption" value="Assembly ID" />
+        <phrase id="fldcaption" value="ID" />
       </field>
       <field id="merk_id">
         <phrase id="fldcaption" value="Merk" />
@@ -670,10 +670,13 @@
     <table id="tb_departemen">
       <phrase id="tblcaption" value="Departemen" />
       <field id="departemen_id">
-        <phrase id="fldcaption" value="departemen id" />
+        <phrase id="fldcaption" value="ID" />
       </field>
       <field id="departemen_nama">
-        <phrase id="fldcaption" value="departemen nama" />
+        <phrase id="fldcaption" value="Departemen" />
+      </field>
+      <field id="departemen_kode">
+        <phrase id="fldcaption" value="Kode" />
       </field>
     </table>
   </project>

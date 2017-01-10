@@ -274,6 +274,7 @@ class ctb_departemen_add extends ctb_departemen {
 		$objForm = new cFormObj();
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
 		$this->departemen_nama->SetVisibility();
+		$this->departemen_kode->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -462,6 +463,8 @@ class ctb_departemen_add extends ctb_departemen {
 	function LoadDefaultValues() {
 		$this->departemen_nama->CurrentValue = NULL;
 		$this->departemen_nama->OldValue = $this->departemen_nama->CurrentValue;
+		$this->departemen_kode->CurrentValue = NULL;
+		$this->departemen_kode->OldValue = $this->departemen_kode->CurrentValue;
 	}
 
 	// Load form values
@@ -472,6 +475,9 @@ class ctb_departemen_add extends ctb_departemen {
 		if (!$this->departemen_nama->FldIsDetailKey) {
 			$this->departemen_nama->setFormValue($objForm->GetValue("x_departemen_nama"));
 		}
+		if (!$this->departemen_kode->FldIsDetailKey) {
+			$this->departemen_kode->setFormValue($objForm->GetValue("x_departemen_kode"));
+		}
 	}
 
 	// Restore form values
@@ -479,6 +485,7 @@ class ctb_departemen_add extends ctb_departemen {
 		global $objForm;
 		$this->LoadOldRecord();
 		$this->departemen_nama->CurrentValue = $this->departemen_nama->FormValue;
+		$this->departemen_kode->CurrentValue = $this->departemen_kode->FormValue;
 	}
 
 	// Load row based on key values
@@ -512,6 +519,7 @@ class ctb_departemen_add extends ctb_departemen {
 		$this->Row_Selected($row);
 		$this->departemen_id->setDbValue($rs->fields('departemen_id'));
 		$this->departemen_nama->setDbValue($rs->fields('departemen_nama'));
+		$this->departemen_kode->setDbValue($rs->fields('departemen_kode'));
 	}
 
 	// Load DbValue from recordset
@@ -520,6 +528,7 @@ class ctb_departemen_add extends ctb_departemen {
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->departemen_id->DbValue = $row['departemen_id'];
 		$this->departemen_nama->DbValue = $row['departemen_nama'];
+		$this->departemen_kode->DbValue = $row['departemen_kode'];
 	}
 
 	// Load old record
@@ -557,6 +566,7 @@ class ctb_departemen_add extends ctb_departemen {
 		// Common render codes for all row types
 		// departemen_id
 		// departemen_nama
+		// departemen_kode
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -568,10 +578,19 @@ class ctb_departemen_add extends ctb_departemen {
 		$this->departemen_nama->ViewValue = $this->departemen_nama->CurrentValue;
 		$this->departemen_nama->ViewCustomAttributes = "";
 
+		// departemen_kode
+		$this->departemen_kode->ViewValue = $this->departemen_kode->CurrentValue;
+		$this->departemen_kode->ViewCustomAttributes = "";
+
 			// departemen_nama
 			$this->departemen_nama->LinkCustomAttributes = "";
 			$this->departemen_nama->HrefValue = "";
 			$this->departemen_nama->TooltipValue = "";
+
+			// departemen_kode
+			$this->departemen_kode->LinkCustomAttributes = "";
+			$this->departemen_kode->HrefValue = "";
+			$this->departemen_kode->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_ADD) { // Add row
 
 			// departemen_nama
@@ -580,11 +599,21 @@ class ctb_departemen_add extends ctb_departemen {
 			$this->departemen_nama->EditValue = ew_HtmlEncode($this->departemen_nama->CurrentValue);
 			$this->departemen_nama->PlaceHolder = ew_RemoveHtml($this->departemen_nama->FldCaption());
 
+			// departemen_kode
+			$this->departemen_kode->EditAttrs["class"] = "form-control";
+			$this->departemen_kode->EditCustomAttributes = "";
+			$this->departemen_kode->EditValue = ew_HtmlEncode($this->departemen_kode->CurrentValue);
+			$this->departemen_kode->PlaceHolder = ew_RemoveHtml($this->departemen_kode->FldCaption());
+
 			// Add refer script
 			// departemen_nama
 
 			$this->departemen_nama->LinkCustomAttributes = "";
 			$this->departemen_nama->HrefValue = "";
+
+			// departemen_kode
+			$this->departemen_kode->LinkCustomAttributes = "";
+			$this->departemen_kode->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD ||
 			$this->RowType == EW_ROWTYPE_EDIT ||
@@ -609,6 +638,9 @@ class ctb_departemen_add extends ctb_departemen {
 			return ($gsFormError == "");
 		if (!$this->departemen_nama->FldIsDetailKey && !is_null($this->departemen_nama->FormValue) && $this->departemen_nama->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->departemen_nama->FldCaption(), $this->departemen_nama->ReqErrMsg));
+		}
+		if (!$this->departemen_kode->FldIsDetailKey && !is_null($this->departemen_kode->FormValue) && $this->departemen_kode->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->departemen_kode->FldCaption(), $this->departemen_kode->ReqErrMsg));
 		}
 
 		// Return validate result
@@ -636,6 +668,9 @@ class ctb_departemen_add extends ctb_departemen {
 
 		// departemen_nama
 		$this->departemen_nama->SetDbValueDef($rsnew, $this->departemen_nama->CurrentValue, "", FALSE);
+
+		// departemen_kode
+		$this->departemen_kode->SetDbValueDef($rsnew, $this->departemen_kode->CurrentValue, "", FALSE);
 
 		// Call Row Inserting event
 		$rs = ($rsold == NULL) ? NULL : $rsold->fields;
@@ -850,6 +885,9 @@ ftb_departemenadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_departemen_nama");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $tb_departemen->departemen_nama->FldCaption(), $tb_departemen->departemen_nama->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_departemen_kode");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $tb_departemen->departemen_kode->FldCaption(), $tb_departemen->departemen_kode->ReqErrMsg)) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -919,6 +957,16 @@ $tb_departemen_add->ShowMessage();
 <input type="text" data-table="tb_departemen" data-field="x_departemen_nama" name="x_departemen_nama" id="x_departemen_nama" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($tb_departemen->departemen_nama->getPlaceHolder()) ?>" value="<?php echo $tb_departemen->departemen_nama->EditValue ?>"<?php echo $tb_departemen->departemen_nama->EditAttributes() ?>>
 </span>
 <?php echo $tb_departemen->departemen_nama->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($tb_departemen->departemen_kode->Visible) { // departemen_kode ?>
+	<div id="r_departemen_kode" class="form-group">
+		<label id="elh_tb_departemen_departemen_kode" for="x_departemen_kode" class="col-sm-2 control-label ewLabel"><?php echo $tb_departemen->departemen_kode->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
+		<div class="col-sm-10"><div<?php echo $tb_departemen->departemen_kode->CellAttributes() ?>>
+<span id="el_tb_departemen_departemen_kode">
+<input type="text" data-table="tb_departemen" data-field="x_departemen_kode" name="x_departemen_kode" id="x_departemen_kode" size="30" maxlength="5" placeholder="<?php echo ew_HtmlEncode($tb_departemen->departemen_kode->getPlaceHolder()) ?>" value="<?php echo $tb_departemen->departemen_kode->EditValue ?>"<?php echo $tb_departemen->departemen_kode->EditAttributes() ?>>
+</span>
+<?php echo $tb_departemen->departemen_kode->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div>

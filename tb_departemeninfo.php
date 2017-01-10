@@ -9,6 +9,7 @@ $tb_departemen = NULL;
 class ctb_departemen extends cTable {
 	var $departemen_id;
 	var $departemen_nama;
+	var $departemen_kode;
 
 	//
 	// Table class constructor
@@ -50,6 +51,11 @@ class ctb_departemen extends cTable {
 		$this->departemen_nama = new cField('tb_departemen', 'tb_departemen', 'x_departemen_nama', 'departemen_nama', '`departemen_nama`', '`departemen_nama`', 200, -1, FALSE, '`departemen_nama`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->departemen_nama->Sortable = TRUE; // Allow sort
 		$this->fields['departemen_nama'] = &$this->departemen_nama;
+
+		// departemen_kode
+		$this->departemen_kode = new cField('tb_departemen', 'tb_departemen', 'x_departemen_kode', 'departemen_kode', '`departemen_kode`', '`departemen_kode`', 200, -1, FALSE, '`departemen_kode`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->departemen_kode->Sortable = TRUE; // Allow sort
+		$this->fields['departemen_kode'] = &$this->departemen_kode;
 	}
 
 	// Set Field Visibility
@@ -534,6 +540,7 @@ class ctb_departemen extends cTable {
 	function LoadListRowValues(&$rs) {
 		$this->departemen_id->setDbValue($rs->fields('departemen_id'));
 		$this->departemen_nama->setDbValue($rs->fields('departemen_nama'));
+		$this->departemen_kode->setDbValue($rs->fields('departemen_kode'));
 	}
 
 	// Render list row values
@@ -546,6 +553,7 @@ class ctb_departemen extends cTable {
    // Common render codes
 		// departemen_id
 		// departemen_nama
+		// departemen_kode
 		// departemen_id
 
 		$this->departemen_id->ViewValue = $this->departemen_id->CurrentValue;
@@ -554,6 +562,10 @@ class ctb_departemen extends cTable {
 		// departemen_nama
 		$this->departemen_nama->ViewValue = $this->departemen_nama->CurrentValue;
 		$this->departemen_nama->ViewCustomAttributes = "";
+
+		// departemen_kode
+		$this->departemen_kode->ViewValue = $this->departemen_kode->CurrentValue;
+		$this->departemen_kode->ViewCustomAttributes = "";
 
 		// departemen_id
 		$this->departemen_id->LinkCustomAttributes = "";
@@ -564,6 +576,11 @@ class ctb_departemen extends cTable {
 		$this->departemen_nama->LinkCustomAttributes = "";
 		$this->departemen_nama->HrefValue = "";
 		$this->departemen_nama->TooltipValue = "";
+
+		// departemen_kode
+		$this->departemen_kode->LinkCustomAttributes = "";
+		$this->departemen_kode->HrefValue = "";
+		$this->departemen_kode->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -587,6 +604,12 @@ class ctb_departemen extends cTable {
 		$this->departemen_nama->EditCustomAttributes = "";
 		$this->departemen_nama->EditValue = $this->departemen_nama->CurrentValue;
 		$this->departemen_nama->PlaceHolder = ew_RemoveHtml($this->departemen_nama->FldCaption());
+
+		// departemen_kode
+		$this->departemen_kode->EditAttrs["class"] = "form-control";
+		$this->departemen_kode->EditCustomAttributes = "";
+		$this->departemen_kode->EditValue = $this->departemen_kode->CurrentValue;
+		$this->departemen_kode->PlaceHolder = ew_RemoveHtml($this->departemen_kode->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -617,9 +640,11 @@ class ctb_departemen extends cTable {
 				if ($ExportPageType == "view") {
 					if ($this->departemen_id->Exportable) $Doc->ExportCaption($this->departemen_id);
 					if ($this->departemen_nama->Exportable) $Doc->ExportCaption($this->departemen_nama);
+					if ($this->departemen_kode->Exportable) $Doc->ExportCaption($this->departemen_kode);
 				} else {
 					if ($this->departemen_id->Exportable) $Doc->ExportCaption($this->departemen_id);
 					if ($this->departemen_nama->Exportable) $Doc->ExportCaption($this->departemen_nama);
+					if ($this->departemen_kode->Exportable) $Doc->ExportCaption($this->departemen_kode);
 				}
 				$Doc->EndExportRow();
 			}
@@ -653,9 +678,11 @@ class ctb_departemen extends cTable {
 					if ($ExportPageType == "view") {
 						if ($this->departemen_id->Exportable) $Doc->ExportField($this->departemen_id);
 						if ($this->departemen_nama->Exportable) $Doc->ExportField($this->departemen_nama);
+						if ($this->departemen_kode->Exportable) $Doc->ExportField($this->departemen_kode);
 					} else {
 						if ($this->departemen_id->Exportable) $Doc->ExportField($this->departemen_id);
 						if ($this->departemen_nama->Exportable) $Doc->ExportField($this->departemen_nama);
+						if ($this->departemen_kode->Exportable) $Doc->ExportField($this->departemen_kode);
 					}
 					$Doc->EndExportRow();
 				}

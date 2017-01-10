@@ -401,6 +401,7 @@ class ctb_departemen_list extends ctb_departemen {
 		$this->departemen_id->SetVisibility();
 		$this->departemen_id->Visible = !$this->IsAdd() && !$this->IsCopy() && !$this->IsGridAdd();
 		$this->departemen_nama->SetVisibility();
+		$this->departemen_kode->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -726,6 +727,7 @@ class ctb_departemen_list extends ctb_departemen {
 		$sFilterList = "";
 		$sFilterList = ew_Concat($sFilterList, $this->departemen_id->AdvancedSearch->ToJSON(), ","); // Field departemen_id
 		$sFilterList = ew_Concat($sFilterList, $this->departemen_nama->AdvancedSearch->ToJSON(), ","); // Field departemen_nama
+		$sFilterList = ew_Concat($sFilterList, $this->departemen_kode->AdvancedSearch->ToJSON(), ","); // Field departemen_kode
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -785,6 +787,14 @@ class ctb_departemen_list extends ctb_departemen {
 		$this->departemen_nama->AdvancedSearch->SearchValue2 = @$filter["y_departemen_nama"];
 		$this->departemen_nama->AdvancedSearch->SearchOperator2 = @$filter["w_departemen_nama"];
 		$this->departemen_nama->AdvancedSearch->Save();
+
+		// Field departemen_kode
+		$this->departemen_kode->AdvancedSearch->SearchValue = @$filter["x_departemen_kode"];
+		$this->departemen_kode->AdvancedSearch->SearchOperator = @$filter["z_departemen_kode"];
+		$this->departemen_kode->AdvancedSearch->SearchCondition = @$filter["v_departemen_kode"];
+		$this->departemen_kode->AdvancedSearch->SearchValue2 = @$filter["y_departemen_kode"];
+		$this->departemen_kode->AdvancedSearch->SearchOperator2 = @$filter["w_departemen_kode"];
+		$this->departemen_kode->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -793,6 +803,7 @@ class ctb_departemen_list extends ctb_departemen {
 	function BasicSearchSQL($arKeywords, $type) {
 		$sWhere = "";
 		$this->BuildBasicSearchSQL($sWhere, $this->departemen_nama, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->departemen_kode, $arKeywords, $type);
 		return $sWhere;
 	}
 
@@ -958,6 +969,7 @@ class ctb_departemen_list extends ctb_departemen {
 			$this->CurrentOrderType = @$_GET["ordertype"];
 			$this->UpdateSort($this->departemen_id); // departemen_id
 			$this->UpdateSort($this->departemen_nama); // departemen_nama
+			$this->UpdateSort($this->departemen_kode); // departemen_kode
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -992,6 +1004,7 @@ class ctb_departemen_list extends ctb_departemen {
 				$this->setSessionOrderBy($sOrderBy);
 				$this->departemen_id->setSort("");
 				$this->departemen_nama->setSort("");
+				$this->departemen_kode->setSort("");
 			}
 
 			// Reset start position
@@ -1447,6 +1460,7 @@ class ctb_departemen_list extends ctb_departemen {
 		$this->Row_Selected($row);
 		$this->departemen_id->setDbValue($rs->fields('departemen_id'));
 		$this->departemen_nama->setDbValue($rs->fields('departemen_nama'));
+		$this->departemen_kode->setDbValue($rs->fields('departemen_kode'));
 	}
 
 	// Load DbValue from recordset
@@ -1455,6 +1469,7 @@ class ctb_departemen_list extends ctb_departemen {
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->departemen_id->DbValue = $row['departemen_id'];
 		$this->departemen_nama->DbValue = $row['departemen_nama'];
+		$this->departemen_kode->DbValue = $row['departemen_kode'];
 	}
 
 	// Load old record
@@ -1498,6 +1513,7 @@ class ctb_departemen_list extends ctb_departemen {
 		// Common render codes for all row types
 		// departemen_id
 		// departemen_nama
+		// departemen_kode
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1509,6 +1525,10 @@ class ctb_departemen_list extends ctb_departemen {
 		$this->departemen_nama->ViewValue = $this->departemen_nama->CurrentValue;
 		$this->departemen_nama->ViewCustomAttributes = "";
 
+		// departemen_kode
+		$this->departemen_kode->ViewValue = $this->departemen_kode->CurrentValue;
+		$this->departemen_kode->ViewCustomAttributes = "";
+
 			// departemen_id
 			$this->departemen_id->LinkCustomAttributes = "";
 			$this->departemen_id->HrefValue = "";
@@ -1518,6 +1538,11 @@ class ctb_departemen_list extends ctb_departemen {
 			$this->departemen_nama->LinkCustomAttributes = "";
 			$this->departemen_nama->HrefValue = "";
 			$this->departemen_nama->TooltipValue = "";
+
+			// departemen_kode
+			$this->departemen_kode->LinkCustomAttributes = "";
+			$this->departemen_kode->HrefValue = "";
+			$this->departemen_kode->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2131,6 +2156,15 @@ $tb_departemen_list->ListOptions->Render("header", "left");
         </div></div></th>
 	<?php } ?>
 <?php } ?>		
+<?php if ($tb_departemen->departemen_kode->Visible) { // departemen_kode ?>
+	<?php if ($tb_departemen->SortUrl($tb_departemen->departemen_kode) == "") { ?>
+		<th data-name="departemen_kode"><div id="elh_tb_departemen_departemen_kode" class="tb_departemen_departemen_kode"><div class="ewTableHeaderCaption"><?php echo $tb_departemen->departemen_kode->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="departemen_kode"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $tb_departemen->SortUrl($tb_departemen->departemen_kode) ?>',1);"><div id="elh_tb_departemen_departemen_kode" class="tb_departemen_departemen_kode">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $tb_departemen->departemen_kode->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($tb_departemen->departemen_kode->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($tb_departemen->departemen_kode->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+        </div></div></th>
+	<?php } ?>
+<?php } ?>		
 <?php
 
 // Render list options (header, right)
@@ -2209,6 +2243,14 @@ $tb_departemen_list->ListOptions->Render("body", "left", $tb_departemen_list->Ro
 <span id="el<?php echo $tb_departemen_list->RowCnt ?>_tb_departemen_departemen_nama" class="tb_departemen_departemen_nama">
 <span<?php echo $tb_departemen->departemen_nama->ViewAttributes() ?>>
 <?php echo $tb_departemen->departemen_nama->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($tb_departemen->departemen_kode->Visible) { // departemen_kode ?>
+		<td data-name="departemen_kode"<?php echo $tb_departemen->departemen_kode->CellAttributes() ?>>
+<span id="el<?php echo $tb_departemen_list->RowCnt ?>_tb_departemen_departemen_kode" class="tb_departemen_departemen_kode">
+<span<?php echo $tb_departemen->departemen_kode->ViewAttributes() ?>>
+<?php echo $tb_departemen->departemen_kode->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
